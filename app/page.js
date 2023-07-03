@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import styles from './page.module.css'
-import { Paper, Grid, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Container, CircularProgress, Card, TextField } from '@mui/material';
+import { Paper, Grid, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Container, CircularProgress, Card, TextField, Chip, Button, Typography } from '@mui/material';
 import { styled } from '@mui/system';
+import { chains } from './config';
 
 // 使用 styled 工具创建自定义 TableCell 组件，定义一些基本样式
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -18,31 +19,58 @@ const StyledTableHeaderCell = styled(StyledTableCell)({
   fontWeight: 'bold',
 });
 
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
+function NewPair() {
+  return <Card style={{ borderRadius: 8, overflow: 'hidden' }}>
+  <TableContainer style={{ maxHeight: 400, overflow: 'auto' }}>
+    <Table stickyHeader>
+      <TableHead>
+        <TableRow>
+          <StyledTableHeaderCell>Name</StyledTableHeaderCell>
+          <StyledTableHeaderCell>Value</StyledTableHeaderCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        
+      </TableBody>
+    </Table>
+  </TableContainer>
+  </Card>
 }
 
-const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
-];
 
 export default function Home() {
   const [updater, setUpdater] = useState(0);
   const [loading, setLoading] = useState(false);
   const [tokenPairs, setTokenPairs] = useState([]);
   const [filter, setFilter] = useState('');
+  const [filter2, setFilter2] = useState('');
+  const [filter3, setFilter3] = useState('');
 
   useEffect(() => {
     const func = async () => {
       setLoading(true);
       try {
-        let ret = await fetch('/api/tokenPairs/testnet');
+        let ret = await fetch('/api/tokenPairsHash/testnet');
+        ret = await ret.json();
+        console.log('hash', ret.data);
+        // compare with local storage
+        const localHash = localStorage.getItem('tokenPairsHash_testnet');
+        if (localHash === ret.data) {
+          console.log('same hash');
+          // load cached token pairs
+          const localTokenPairs = localStorage.getItem('tokenPairs_testnet');
+          if (localTokenPairs) {
+            setTokenPairs(JSON.parse(localTokenPairs).reverse());
+          }
+          setLoading(false);
+          return;
+        }
+        localStorage.setItem('tokenPairsHash_testnet', ret.data);
+        localStorage.removeItem('tokenPairs_testnet');
+        ret = await fetch('/api/tokenPairs/testnet');
         ret = await ret.json();
         console.log(ret);
+        localStorage.setItem('tokenPairs_testnet', JSON.stringify(ret.data));
         setTokenPairs(ret.data.reverse());
       } catch (error) {
         console.error(error);
@@ -53,6 +81,47 @@ export default function Home() {
     func();
     
   }, [updater]);
+
+  const tokens = useMemo(() => {
+    let _tokens = {};
+    tokenPairs.forEach(v => {
+      _tokens[v.ancestorSymbol + "_" + v.ancestorChainID] = {
+        symbol: v.ancestorSymbol,
+        name: v.ancestorName,
+        decimals: v.ancestorDecimals,
+        chainID: v.ancestorChainID,
+        address: v.ancestorAccount,
+      };
+      _tokens[v.fromSymbol + "_" + v.fromChainID] = {
+        symbol: v.fromSymbol,
+        name: v.fromName,
+        decimals: v.fromDecimals,
+        chainID: v.fromChainID,
+        address: v.fromAccount,
+      };
+      _tokens[v.toSymbol + "_" + v.toChainID] = {
+        symbol: v.symbol,
+        name: v.name,
+        decimals: v.decimals,
+        chainID: v.toChainID,
+        address: v.toAccount,
+      };
+    });
+    
+    return _tokens;
+  }, [tokenPairs]);
+
+  const latestTokenPairId = useMemo(()=>{
+    if (tokenPairs.length === 0) return 0;
+    let value = 0;
+    for (let i=0; i< tokenPairs.length; i++) {
+      if (Number(tokenPairs[i].id) < 10000000) {
+        return tokenPairs[i].id;
+      }
+    }
+    return 999999;
+  }, [tokenPairs])
+  console.log('latestTokenPairId', latestTokenPairId);
 
   return (
     <Container maxWidth="lg" className={styles.container}>
@@ -71,12 +140,13 @@ export default function Home() {
           <>
           <TextField label="Filter" value={filter} onChange={e => setFilter(e.target.value)} size="small" variant="outlined" style={{ backgroundColor: 'white', marginBottom: '10px', border: 'none', borderRadius: 8 }} />
           <Card style={{ borderRadius: 8, overflow: 'hidden' }}>
-          <TableContainer style={{ maxHeight: 500, overflow: 'auto' }}>
+          <TableContainer style={{ maxHeight: 400, overflow: 'auto' }}>
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
                   <StyledTableHeaderCell>TokenPairID</StyledTableHeaderCell>
                   <StyledTableHeaderCell>AncestorSymbol</StyledTableHeaderCell>
+                  <StyledTableHeaderCell>AncestorDecimals</StyledTableHeaderCell>
                   <StyledTableHeaderCell>AncestorChainID</StyledTableHeaderCell>
                   <StyledTableHeaderCell>FromChainID</StyledTableHeaderCell>
                   <StyledTableHeaderCell>ToChainID</StyledTableHeaderCell>
@@ -86,7 +156,7 @@ export default function Home() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {tokenPairs.filter(v=>v.ancestorSymbol.toLowerCase().includes(filter.toLowerCase()) || v.id.toLowerCase().includes(filter.toLowerCase())).map((row, index) => (
+                {tokenPairs.filter(v=>Number(v.id) < 10000).filter(v=>v.ancestorSymbol.toLowerCase().includes(filter.toLowerCase()) || v.id.toLowerCase().includes(filter.toLowerCase())).map((row, index) => (
                   <TableRow key={row.id} sx={{ 
                     '&:nth-of-type(odd)': { backgroundColor: '#bae4e2' },
                     '&:nth-of-type(even)': { backgroundColor: '#fcfcfc' }
@@ -95,110 +165,121 @@ export default function Home() {
                       {row.id}
                     </StyledTableCell>
                     <StyledTableCell style={{ maxWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.ancestorSymbol}</StyledTableCell>
-                    <StyledTableCell style={{ maxWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.ancestorChainID}</StyledTableCell>
-                    <StyledTableCell style={{ maxWidth: 160, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.fromChainID}</StyledTableCell>
-                    <StyledTableCell style={{ maxWidth: 160, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.toChainID}</StyledTableCell>
-                    <StyledTableCell style={{ maxWidth: 400, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.ancestorAccount}</StyledTableCell>
-                    <StyledTableCell style={{ maxWidth: 400, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.fromAccount}</StyledTableCell>
-                    <StyledTableCell style={{ maxWidth: 400, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.toAccount}</StyledTableCell>
+                    <StyledTableCell style={{ maxWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.ancestorDecimals}</StyledTableCell>
+                    <StyledTableCell style={{ minWidth: 150, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.ancestorChainID}<Chip size="small" label={chains.find(v=>Number(v.chainId) === Number(row.ancestorChainID))?.chainType} /></StyledTableCell>
+                    <StyledTableCell style={{ minWidth: 150, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.fromChainID}<Chip size="small" label={chains.find(v=>Number(v.chainId) === Number(row.fromChainID))?.chainType} /></StyledTableCell>
+                    <StyledTableCell style={{ minWidth: 150, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.toChainID}<Chip size="small" label={chains.find(v=>Number(v.chainId) === Number(row.toChainID))?.chainType} /></StyledTableCell>
+                    <StyledTableCell style={{ maxWidth: 380, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.ancestorAccount}</StyledTableCell>
+                    <StyledTableCell style={{ maxWidth: 380, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.fromAccount}</StyledTableCell>
+                    <StyledTableCell style={{ maxWidth: 380, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.toAccount}</StyledTableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
           </Card>
+          <Typography color="textSecondary" style={{marginTop: '10px'}}>
+          * All the token pairs.
+          </Typography>
           </>
         )}
+        
       </Paper>
       <Grid container spacing={2} className={styles.lowerPart} >
         <Grid item xs={4}>
           <Paper elevation={3} className={styles.leftPart}>
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Dessert (100g serving)</TableCell>
-                    <TableCell align="right">Calories</TableCell>
-                    <TableCell align="right">Fat&nbsp;(g)</TableCell>
-                    <TableCell align="right">Carbs&nbsp;(g)</TableCell>
-                    <TableCell align="right">Protein&nbsp;(g)</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {rows.map((row) => (
-                    <TableRow key={row.name}>
-                      <TableCell component="th" scope="row">
-                        {row.name}
-                      </TableCell>
-                      <TableCell align="right">{row.calories}</TableCell>
-                      <TableCell align="right">{row.fat}</TableCell>
-                      <TableCell align="right">{row.carbs}</TableCell>
-                      <TableCell align="right">{row.protein}</TableCell>
+          {loading ? (
+            <Box display="flex" justifyContent="center" p={1}>
+              <CircularProgress />
+            </Box>
+            ) : (
+              <>
+              <TextField label="Filter" value={filter2} onChange={e => setFilter2(e.target.value)} size="small" variant="outlined" style={{ backgroundColor: 'white', marginBottom: '10px', border: 'none', borderRadius: 8 }} />
+              <Card style={{ borderRadius: 8, overflow: 'hidden' }}>
+              <TableContainer style={{ maxHeight: 400, overflow: 'auto' }}>
+                <Table stickyHeader>
+                  <TableHead>
+                    <TableRow>
+                      <StyledTableHeaderCell>Chain</StyledTableHeaderCell>
+                      <StyledTableHeaderCell>Symbol</StyledTableHeaderCell>
+                      <StyledTableHeaderCell>Name</StyledTableHeaderCell>
+                      <StyledTableHeaderCell>Decimals</StyledTableHeaderCell>
+                      <StyledTableHeaderCell>Address</StyledTableHeaderCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                  </TableHead>
+                  <TableBody>
+                    {Object.keys(tokens).filter(v=>v.toLowerCase().includes(filter2.toLowerCase())).map((row, index) => (
+                      <TableRow key={row} sx={{ 
+                        '&:nth-of-type(odd)': { backgroundColor: '#bae4e2' },
+                        '&:nth-of-type(even)': { backgroundColor: '#fcfcfc' }
+                        }}>
+                        <StyledTableCell style={{ minWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}><Chip size="small" label={chains.find(v=>Number(v.chainId) === Number(tokens[row].chainID))?.chainType} /></StyledTableCell>
+                        <StyledTableCell component="th" scope="row" style={{ maxWidth: 120, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                          {tokens[row].symbol}
+                        </StyledTableCell>
+                        <StyledTableCell style={{ fontSize: '12px', maxWidth: 120, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{tokens[row].name}</StyledTableCell>
+                        <StyledTableCell style={{ maxWidth: 30, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{tokens[row].decimals}</StyledTableCell>
+                        <StyledTableCell style={{ maxWidth: 380, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{tokens[row].address}</StyledTableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              </Card>
+              <Typography color="textSecondary" style={{marginTop: '10px'}}>
+              * All the tokens.
+              </Typography>
+              </>
+            )}
           </Paper>
         </Grid>
         <Grid item xs={4}>
           <Paper elevation={3} className={styles.middlePart}>
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Dessert (100g serving)</TableCell>
-                    <TableCell align="right">Calories</TableCell>
-                    <TableCell align="right">Fat&nbsp;(g)</TableCell>
-                    <TableCell align="right">Carbs&nbsp;(g)</TableCell>
-                    <TableCell align="right">Protein&nbsp;(g)</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {rows.map((row) => (
-                    <TableRow key={row.name}>
-                      <TableCell component="th" scope="row">
-                        {row.name}
-                      </TableCell>
-                      <TableCell align="right">{row.calories}</TableCell>
-                      <TableCell align="right">{row.fat}</TableCell>
-                      <TableCell align="right">{row.carbs}</TableCell>
-                      <TableCell align="right">{row.protein}</TableCell>
+          {loading ? (
+            <Box display="flex" justifyContent="center" p={1}>
+              <CircularProgress />
+            </Box>
+            ) : (
+              <>
+              <TextField label="Filter" value={filter3} onChange={e => setFilter3(e.target.value)} size="small" variant="outlined" style={{ backgroundColor: 'white', marginBottom: '10px', border: 'none', borderRadius: 8 }} />
+              <Card style={{ borderRadius: 8, overflow: 'hidden' }}>
+              <TableContainer style={{ maxHeight: 400, overflow: 'auto' }}>
+                <Table stickyHeader>
+                  <TableHead>
+                    <TableRow>
+                      <StyledTableHeaderCell>ChainType</StyledTableHeaderCell>
+                      <StyledTableHeaderCell>ChainName</StyledTableHeaderCell>
+                      <StyledTableHeaderCell>ChainID</StyledTableHeaderCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                  </TableHead>
+                  <TableBody>
+                    {chains.filter(v=>v.chainType.toLowerCase().includes(filter3.toLowerCase())||v.chainName.toLowerCase().includes(filter3.toLowerCase())).map((row, index) => (
+                      <TableRow key={row.chainId} sx={{ 
+                        '&:nth-of-type(odd)': { backgroundColor: '#bae4e2' },
+                        '&:nth-of-type(even)': { backgroundColor: '#fcfcfc' }
+                        }}>
+                        <StyledTableCell style={{ minWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}><Chip size="small" label={row?.chainType} /></StyledTableCell>
+                        <StyledTableCell component="th" scope="row" style={{ maxWidth: 120, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                          {row.chainName}
+                        </StyledTableCell>
+                        <StyledTableCell style={{ fontSize: '12px', maxWidth: 120, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.chainId}</StyledTableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              </Card>
+              <Typography color="textSecondary" style={{marginTop: '10px'}}>
+              * All the supported blockchains.
+              </Typography>
+              </>
+            )}
           </Paper>
         </Grid>
         <Grid item xs={4}>
           <Paper elevation={3} className={styles.rightPart}>
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Dessert (100g serving)</TableCell>
-                    <TableCell align="right">Calories</TableCell>
-                    <TableCell align="right">Fat&nbsp;(g)</TableCell>
-                    <TableCell align="right">Carbs&nbsp;(g)</TableCell>
-                    <TableCell align="right">Protein&nbsp;(g)</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {rows.map((row) => (
-                    <TableRow key={row.name}>
-                      <TableCell component="th" scope="row">
-                        {row.name}
-                      </TableCell>
-                      <TableCell align="right">{row.calories}</TableCell>
-                      <TableCell align="right">{row.fat}</TableCell>
-                      <TableCell align="right">{row.carbs}</TableCell>
-                      <TableCell align="right">{row.protein}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+            <Button style={{marginBottom: '10px'}} fullWidth variant='outlined'>+</Button>
+            <NewPair />
           </Paper>
         </Grid>
       </Grid>
