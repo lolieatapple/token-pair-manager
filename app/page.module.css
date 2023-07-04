@@ -1,5 +1,6 @@
 .upperPart {
   background-color: #add8e6;
+  opacity: 0.8;
   border-radius: 8px;
   padding: 20px;
   margin-bottom: 20px;
@@ -7,18 +8,23 @@
 }
 
 .leftPart {
+  opacity: 0.8;
   background-color: #90ee90;
   border-radius: 8px;
   padding: 20px;
 }
 
 .middlePart {
+  opacity: 0.8;
+
   background-color: #f08080;
   border-radius: 8px;
   padding: 20px;
 }
 
 .rightPart {
+  opacity: 0.8;
+
   background-color: #ffd700;
   border-radius: 8px;
   padding: 20px;

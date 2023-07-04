@@ -9,14 +9,18 @@ import { useDrag } from "react-dnd";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDrop } from "react-dnd";
+import { TESTNET_TOKEN_MANAGER } from './config';
 
-// 使用 styled 工具创建自定义 TableCell 组件，定义一些基本样式
+const networkOptions = TESTNET_TOKEN_MANAGER.map((chain) => ({
+  value: chain.tokenManager,
+  label: chain.chainName,
+}));
+
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   padding: theme.spacing(1),
   fontSize: 14,
 }));
 
-// 创建自定义的 TableHead，对表头单元格添加特殊样式
 const StyledTableHeaderCell = styled(StyledTableCell)({
   backgroundColor: '#3fb5af',
   color: '#fff',
@@ -26,7 +30,7 @@ const StyledTableHeaderCell = styled(StyledTableCell)({
 const customStyles = {
   menu: (provided, state) => ({
     ...provided,
-    maxHeight: '150px', // 你可以设置你需要的任何值
+    maxHeight: '150px',
   }),
   menuList: (provided, state) => ({
     ...provided,
@@ -112,11 +116,6 @@ function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken, chain
   const id = pair[0];
 
   console.log('tokens', tokens);
-
-  const networkOptions = chains.map((chain) => ({
-    value: chain.chainName,
-    label: chain.chainName,
-  }));
   
   const [network, setNetwork] = useState();
 
