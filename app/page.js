@@ -4,13 +4,11 @@ import { useEffect, useMemo, useState, useCallback } from 'react';
 import styles from './page.module.css'
 import { Paper, Grid, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Container, CircularProgress, Card, TextField, Chip, Button, Typography, Stack } from '@mui/material';
 import { styled } from '@mui/system';
-import { chains } from './config';
 import Select from "react-select";
 import { useDrag } from "react-dnd";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDrop } from "react-dnd";
-import { debounce } from 'lodash'
 
 // 使用 styled 工具创建自定义 TableCell 组件，定义一些基本样式
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -24,11 +22,6 @@ const StyledTableHeaderCell = styled(StyledTableCell)({
   color: '#fff',
   fontWeight: 'bold',
 });
-
-const networkOptions = chains.map((chain) => ({
-  value: chain.chainName,
-  label: chain.chainName,
-}));
 
 const DraggableItem = ({ id, children }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
@@ -104,10 +97,15 @@ const DropContainer = ({ onDrop, height, width, children, type }) => {
   );
 };
 
-function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken}) {
+function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken, chains}) {
   const id = pair[0];
 
   console.log('tokens', tokens);
+
+  const networkOptions = chains.map((chain) => ({
+    value: chain.chainName,
+    label: chain.chainName,
+  }));
   
   const [network, setNetwork] = useState();
 
@@ -283,14 +281,21 @@ export default function Home() {
   const [filter2, setFilter2] = useState('');
   const [filter3, setFilter3] = useState('');
   const [currentPairs, setCurrentPairs] = useState([]);
+  const [chains, setChains] = useState([]);
 
   useEffect(() => {
     const func = async () => {
       setLoading(true);
+      let ret;
       try {
-        let ret = await fetch('/api/tokenPairsHash/testnet');
+        ret = await fetch('/api/supportedChains/testnet');
+        ret = await ret.json();
+        console.log(ret);
+        setChains(ret.data);
+        ret = await fetch('/api/tokenPairsHash/testnet');
         ret = await ret.json();
         console.log('hash', ret.data);
+
         // compare with local storage
         const localHash = localStorage.getItem('tokenPairsHash_testnet');
         if (localHash === ret.data) {
@@ -322,22 +327,23 @@ export default function Home() {
 
   const tokens = useMemo(() => {
     let _tokens = {};
+    
     tokenPairs.forEach(v => {
-      _tokens[v.ancestorAccount + "_" + v.ancestorChainID + "_" + v.ancestorSymbol] = {
+      _tokens[v.ancestorAccount + "_" + v.ancestorChainID + "_" + v.ancestorSymbol + '_' + chains.find(m=>Number(m.chainID) === Number(v.ancestorChainID))?.chainType] = {
         symbol: v.ancestorSymbol,
         name: v.ancestorName,
         decimals: v.ancestorDecimals,
         chainID: v.ancestorChainID,
         address: v.ancestorAccount,
       };
-      _tokens[v.fromAccount + "_" + v.fromChainID + "_" + v.fromSymbol] = {
+      _tokens[v.fromAccount + "_" + v.fromChainID + "_" + v.fromSymbol + '_' + chains.find(m=>Number(m.chainID) === Number(v.fromChainID))?.chainType] = {
         symbol: v.fromSymbol,
         name: v.fromName,
         decimals: v.fromDecimals,
         chainID: v.fromChainID,
         address: v.fromAccount,
       };
-      _tokens[v.toAccount + "_" + v.toChainID + "_" + v.symbol] = {
+      _tokens[v.toAccount + "_" + v.toChainID + "_" + v.symbol + '_' + chains.find(m=>Number(m.chainID) === Number(v.toChainID))?.chainType] = {
         symbol: v.symbol,
         name: v.name,
         decimals: v.decimals,
@@ -345,9 +351,9 @@ export default function Home() {
         address: v.toAccount,
       };
     });
-    
+    console.log('tokens', _tokens);
     return _tokens;
-  }, [tokenPairs]);
+  }, [tokenPairs, chains]);
 
   const latestTokenPairId = useMemo(()=>{
     if (tokenPairs.length === 0) return 0;
@@ -451,9 +457,9 @@ export default function Home() {
                     </StyledTableCell>
                     <StyledTableCell style={{ maxWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.ancestorSymbol}</StyledTableCell>
                     <StyledTableCell style={{ maxWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.ancestorDecimals}</StyledTableCell>
-                    <StyledTableCell style={{ minWidth: 150, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.ancestorChainID}<Chip size="small" label={chains.find(v=>Number(v.chainId) === Number(row.ancestorChainID))?.chainType} /></StyledTableCell>
-                    <StyledTableCell style={{ minWidth: 150, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.fromChainID}<Chip size="small" label={chains.find(v=>Number(v.chainId) === Number(row.fromChainID))?.chainType} /></StyledTableCell>
-                    <StyledTableCell style={{ minWidth: 150, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.toChainID}<Chip size="small" label={chains.find(v=>Number(v.chainId) === Number(row.toChainID))?.chainType} /></StyledTableCell>
+                    <StyledTableCell style={{ minWidth: 150, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.ancestorChainID}<Chip size="small" label={chains.find(v=>Number(v.chainID) === Number(row.ancestorChainID))?.chainType} /></StyledTableCell>
+                    <StyledTableCell style={{ minWidth: 150, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.fromChainID}<Chip size="small" label={chains.find(v=>Number(v.chainID) === Number(row.fromChainID))?.chainType} /></StyledTableCell>
+                    <StyledTableCell style={{ minWidth: 150, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.toChainID}<Chip size="small" label={chains.find(v=>Number(v.chainID) === Number(row.toChainID))?.chainType} /></StyledTableCell>
                     <StyledTableCell style={{ maxWidth: 380, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.ancestorAccount}</StyledTableCell>
                     <StyledTableCell style={{ maxWidth: 380, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.fromAccount}</StyledTableCell>
                     <StyledTableCell style={{ maxWidth: 380, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.toAccount}</StyledTableCell>
@@ -501,7 +507,7 @@ export default function Home() {
                         '&:nth-of-type(odd)': { backgroundColor: '#bae4e2' },
                         '&:nth-of-type(even)': { backgroundColor: '#fcfcfc' }
                         }}>
-                        <StyledTableCell style={{ minWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}><Chip size="small" label={chains.find(v=>Number(v.chainId) === Number(tokens[row].chainID))?.chainType} /></StyledTableCell>
+                        <StyledTableCell style={{ minWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}><Chip size="small" label={chains.find(v=>Number(v.chainID) === Number(tokens[row].chainID))?.chainType} /></StyledTableCell>
                         <StyledTableCell component="th" scope="row" style={{ maxWidth: 120, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                           <Stack spacing={2} direction='row'><div>{tokens[row].symbol}</div><DraggableItem id={'token,' +tokens[row].address + ',' + tokens[row].name + ',' + tokens[row].symbol + ',' + tokens[row].decimals + ','+tokens[row].chainID}>⭐</DraggableItem></Stack>
                         </StyledTableCell>
@@ -538,7 +544,7 @@ export default function Home() {
             </Stack>
             {
               currentPairs.length > 0 && currentPairs.map((v, i)=>{
-                return <NewPair key={JSON.stringify(v)} pair={v} tokens={tokens} updatePairId={(oldId, id)=>{
+                return <NewPair key={JSON.stringify(v)} pair={v} tokens={tokens} chains={chains} updatePairId={(oldId, id)=>{
                   console.log('update', id);
                   let _pairs = currentPairs.slice();
                   for (let i=0; i<_pairs.length; i++) {
