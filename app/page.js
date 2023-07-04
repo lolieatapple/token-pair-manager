@@ -23,6 +23,17 @@ const StyledTableHeaderCell = styled(StyledTableCell)({
   fontWeight: 'bold',
 });
 
+const customStyles = {
+  menu: (provided, state) => ({
+    ...provided,
+    maxHeight: '150px', // 你可以设置你需要的任何值
+  }),
+  menuList: (provided, state) => ({
+    ...provided,
+    maxHeight: '150px',
+  }),
+}
+
 const DraggableItem = ({ id, children }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "item",
@@ -254,7 +265,7 @@ function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken, chain
             <StyledTableCell >
               <Stack spacing={1} direction='row' >
               <Select placeholder="Select Chain" menuPlacement="top" options={networkOptions} value={network}
-                
+                styles={customStyles}
                 onChange={(e)=>{
                   console.log(e);
                   setNetwork(e);
@@ -351,7 +362,6 @@ export default function Home() {
         address: v.toAccount,
       };
     });
-    console.log('tokens', _tokens);
     return _tokens;
   }, [tokenPairs, chains]);
 
