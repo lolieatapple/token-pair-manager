@@ -1,12 +1,16 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import styles from './page.module.css'
 import { Paper, Grid, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Container, CircularProgress, Card, TextField, Chip, Button, Typography, Stack } from '@mui/material';
 import { styled } from '@mui/system';
 import { chains } from './config';
 import Select from "react-select";
-
+import { useDrag } from "react-dnd";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { useDrop } from "react-dnd";
+import { debounce } from 'lodash'
 
 // 使用 styled 工具创建自定义 TableCell 组件，定义一些基本样式
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -26,12 +30,73 @@ const networkOptions = chains.map((chain) => ({
   label: chain.chainName,
 }));
 
-function NewPair() {
-  const [value, setValue] = useState('477');
+const DraggableItem = ({ id, children }) => {
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: "item",
+    item: { id },
+    collect: (monitor) => ({
+      isDragging: !!monitor.isDragging(),
+    }),
+  }));
+
+  return (
+    <div
+      ref={drag}
+      style={{ opacity: isDragging ? 0.5 : 1, cursor: "pointer" }}
+    >
+      {children}
+    </div>
+  );
+};
+
+const DropZone = ({ onDrop, height, width, placeholder }) => {
+  const [{ isOver }, drop] = useDrop(() => ({
+    accept: "item",
+    drop: onDrop,
+    collect: (monitor) => ({
+      isOver: !!monitor.isOver(),
+    }),
+  }));
+
+  return (
+    <div
+      ref={drop}
+      style={{
+        height,
+        width,
+        border: "1px dashed gray",
+        backgroundColor: isOver ? "lightgreen" : "transparent",
+      }}
+    >
+      <Box 
+        display="flex" 
+        justifyContent="center"
+        alignItems="center"
+        height="100%"
+      >
+        {placeholder}
+      </Box>
+    </div>
+  );
+};
+
+function NewPair({pair, tokens, updatePairId, removeItem}) {
+  const id = pair[0];
+
+  console.log('tokens', tokens);
+  
   const [network, setNetwork] = useState();
 
+  // const debouncedInputHandler = debounce(value => {
+  //   console.log('debouncedInputHandler', value);
+  //   updatePairId(id, value)
+  // }, 500)  // 在用户停止输入500ms后调用处理函数
+  
   const handleInputChange = (event) => {
-    setValue(event.target.value);
+    let newId = window.prompt('Please enter the token pair ID', event.target.value);
+    if (newId) {
+      updatePairId(id, newId);
+    }
   };
 
   return <Card style={{ borderRadius: 8, overflow: 'hidden', marginBottom: '10px' }}>
@@ -40,7 +105,10 @@ function NewPair() {
         <TableHead>
           <TableRow>
             <StyledTableHeaderCell>Name</StyledTableHeaderCell>
-            <StyledTableHeaderCell>Value</StyledTableHeaderCell>
+            <StyledTableHeaderCell>
+              Value
+              <Button size='small' color='secondary' style={{ textTransform: 'none', height: '24px', float: 'right' }} onClick={()=>removeItem(id)}>X</Button>
+              </StyledTableHeaderCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -48,8 +116,9 @@ function NewPair() {
             <StyledTableCell style={{backgroundColor: '#b6f4cc', minWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }} >Token Pair ID</StyledTableCell>
             <StyledTableCell>
               <TextField 
-                value={value} 
+                defaultValue={id} 
                 size='small'
+                onFocus={handleInputChange}
                 onChange={handleInputChange} 
                 style={{ width: '100%' }} 
               />
@@ -95,15 +164,16 @@ function NewPair() {
             <StyledTableCell style={{backgroundColor: '#b6f4cc', maxWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }} >Operations</StyledTableCell>
             <StyledTableCell >
               <Stack spacing={1} direction='row' >
-              <Select placeholder="Select Network..." menuPlacement="top" options={networkOptions} value={network}
+              <Select placeholder="Select Chain" menuPlacement="top" options={networkOptions} value={network}
                 
                 onChange={(e)=>{
                   console.log(e);
                   setNetwork(e);
                 }} />
-              <Button variant='outlined' color='secondary' style={{ textTransform: 'none' }}>Add</Button>
-              <Button variant='outlined' color='secondary' style={{ textTransform: 'none' }}>Update</Button>
-              <Button variant='outlined' color='secondary' style={{ textTransform: 'none' }}>Copy</Button>
+              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }}>Add</Button>
+              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }}>Update</Button>
+              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }}>Del</Button>
+              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }}>Copy</Button>
               </Stack>
             </StyledTableCell>
           </TableRow>
@@ -121,6 +191,7 @@ export default function Home() {
   const [filter, setFilter] = useState('');
   const [filter2, setFilter2] = useState('');
   const [filter3, setFilter3] = useState('');
+  const [currentPairs, setCurrentPairs] = useState([]);
 
   useEffect(() => {
     const func = async () => {
@@ -197,10 +268,48 @@ export default function Home() {
     }
     return 999999;
   }, [tokenPairs])
-  console.log('latestTokenPairId', latestTokenPairId);
+  // console.log('latestTokenPairId', latestTokenPairId);
+
+  const onDrop = useCallback((item)=>{
+    let id = item.id;
+    console.log('drop', id);
+    console.log('tokenPairs in drop', tokenPairs.length);
+    console.log('currentPairs in drop', currentPairs.length);
+    if(!id.includes('tokenPair_')) return;
+    const tokenPairId = id.replace('tokenPair_', '');
+    let tokenPair = tokenPairs.find(v=>Number(v.id) === Number(tokenPairId));
+    if(!tokenPair) {
+      console.log('tokenPair not found');
+      console.log('tokenPairs', tokenPairs);
+      console.log('tokenPairId', tokenPairId);
+      let _localTokenPairs = localStorage.getItem('tokenPairs_testnet');
+      if (_localTokenPairs) {
+        _localTokenPairs = JSON.parse(_localTokenPairs);
+        console.log('_localTokenPairs', _localTokenPairs);
+        tokenPair = _localTokenPairs.find(v=>Number(v.id) === Number(tokenPairId));
+        console.log('tokenPair', tokenPair);
+        if (!tokenPair) {
+          return;
+        }
+      }
+    }
+    console.log('selected', tokenPair);
+    let formatPair = [
+      tokenPair.id,
+      [tokenPair.ancestorAccount, tokenPair.ancestorName, tokenPair.ancestorSymbol, tokenPair.ancestorDecimals, tokenPair.ancestorChainID],
+      tokenPair.fromChainID,
+      tokenPair.fromAccount,
+      tokenPair.toChainID,
+      tokenPair.toAccount,
+    ];
+    setCurrentPairs(prevPairs => [...prevPairs, formatPair]);
+  }, [tokenPairs]);
+
+  console.log('currentPairs.length', currentPairs);
 
   return (
     <Container maxWidth="lg" className={styles.container}>
+      <DndProvider backend={HTML5Backend}>
     <Box 
       display="flex" 
       flexDirection="column" 
@@ -216,7 +325,7 @@ export default function Home() {
           <>
           <TextField label="Filter" value={filter} onChange={e => setFilter(e.target.value)} size="small" variant="outlined" style={{ backgroundColor: 'white', marginBottom: '10px', border: 'none', borderRadius: 8 }} />
           <Card style={{ borderRadius: 8, overflow: 'hidden' }}>
-          <TableContainer style={{ maxHeight: 400, overflow: 'auto' }}>
+          <TableContainer style={{ maxHeight: 300, overflow: 'auto' }}>
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
@@ -237,8 +346,8 @@ export default function Home() {
                     '&:nth-of-type(odd)': { backgroundColor: '#bae4e2' },
                     '&:nth-of-type(even)': { backgroundColor: '#fcfcfc' }
                     }}>
-                    <StyledTableCell component="th" scope="row" style={{ maxWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                      {row.id}
+                    <StyledTableCell component="th" scope="row" style={{ minWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                      <Stack spacing={2} direction='row'><div>{row.id}</div><DraggableItem id={'tokenPair_'+row.id}>⭐</DraggableItem></Stack>
                     </StyledTableCell>
                     <StyledTableCell style={{ maxWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.ancestorSymbol}</StyledTableCell>
                     <StyledTableCell style={{ maxWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.ancestorDecimals}</StyledTableCell>
@@ -255,7 +364,7 @@ export default function Home() {
           </TableContainer>
           </Card>
           <Typography color="textSecondary" style={{marginTop: '10px'}}>
-          * All the token pairs. Right click to add to new pair list.
+          * All the token pairs.
           </Typography>
           </>
         )}
@@ -272,7 +381,7 @@ export default function Home() {
               <>
               <TextField label="Filter" value={filter2} onChange={e => setFilter2(e.target.value)} size="small" variant="outlined" style={{ backgroundColor: 'white', marginBottom: '10px', border: 'none', borderRadius: 8 }} />
               <Card style={{ borderRadius: 8, overflow: 'hidden' }}>
-              <TableContainer style={{ maxHeight: 400, overflow: 'auto' }}>
+              <TableContainer style={{ maxHeight: 300, overflow: 'auto' }}>
                 <Table stickyHeader>
                   <TableHead>
                     <TableRow>
@@ -291,7 +400,7 @@ export default function Home() {
                         }}>
                         <StyledTableCell style={{ minWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}><Chip size="small" label={chains.find(v=>Number(v.chainId) === Number(tokens[row].chainID))?.chainType} /></StyledTableCell>
                         <StyledTableCell component="th" scope="row" style={{ maxWidth: 120, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                          {tokens[row].symbol}
+                          <Stack spacing={2} direction='row'><div>{tokens[row].symbol}</div><DraggableItem id={'token_'+row}>⭐</DraggableItem></Stack>
                         </StyledTableCell>
                         <StyledTableCell style={{ fontSize: '12px', maxWidth: 120, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{tokens[row].name}</StyledTableCell>
                         <StyledTableCell style={{ maxWidth: 30, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{tokens[row].decimals}</StyledTableCell>
@@ -303,7 +412,7 @@ export default function Home() {
               </TableContainer>
               </Card>
               <Typography color="textSecondary" style={{marginTop: '10px'}}>
-              * All the tokens. Right click to add to new pair list.
+              * All the tokens.
               </Typography>
               </>
             )}
@@ -313,22 +422,37 @@ export default function Home() {
         <Grid item xs={6}>
           <Paper elevation={3} className={styles.rightPart}>
             <Stack spacing={1} direction='row'>
-            <Button style={{marginBottom: '10px', textTransform:'none'}} fullWidth variant='outlined'>+ Add TokenPair</Button>
-            <Button style={{marginBottom: '10px', textTransform:'none'}} fullWidth variant='outlined'>→ Move to Mainnet</Button>
-            <Button style={{marginBottom: '10px', textTransform:'none'}} fullWidth variant='outlined'>Connect Wallet</Button>
+            <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined'>+ Add TokenPair</Button>
+            <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined'>→ Move to Mainnet</Button>
+            <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined'>Save</Button>
+            <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined' onClick={()=>setCurrentPairs([])}>Clear</Button>
+            <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined'>Connect Wallet</Button>
             </Stack>
-            
-            <NewPair />
-            {/* <NewPair />
-            <NewPair />
-            <NewPair />
-            <NewPair /> */}
-            
-
+            {
+              currentPairs.length > 0 && currentPairs.map((v, i)=>{
+                return <NewPair key={JSON.stringify(v)} pair={v} tokens updatePairId={(oldId, id)=>{
+                  console.log('update', id);
+                  let _pairs = currentPairs.slice();
+                  for (let i=0; i<_pairs.length; i++) {
+                    if(Number(_pairs[i][0]) === Number(oldId)) {
+                      _pairs[i][0] = id;
+                      break;
+                    }
+                  }
+                  setCurrentPairs(_pairs);
+                }} removeItem={(id)=>{
+                  console.log('remove', id);
+                  let _pairs = currentPairs.slice();
+                  setCurrentPairs(_pairs.filter(v=>Number(v[0]) !== Number(id)));
+                }} />
+              })
+            }
+            <DropZone width="100%" height="90%" placeholder="Drag and Drop Token Pair ⭐ Here to Modify" onDrop={onDrop} tokenPairs={tokenPairs} currentPairs={currentPairs} />
           </Paper>
         </Grid>
       </Grid>
     </Box>
+    </DndProvider>
     </Container>
   )
 }

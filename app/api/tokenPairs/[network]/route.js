@@ -32,6 +32,8 @@ async function handleRequest(request, { params }) {
     ret = { success: false, error: err.message };
   }
 
+  apiClient.close();
+
   return NextResponse.json(ret);
 }
 

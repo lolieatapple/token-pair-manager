@@ -25,7 +25,7 @@ async function handleRequest(request, { params }) {
   let ret;
   try {
     apiClient = new iWanClient(process.env.IWAN_APIKEY, process.env.IWAN_SECKEY, option);
-    let value = await apiClient.getTokenPairsHash();
+    let value = await apiClient.getSupportedChainInfo();
     ret = { success: true, data: value };
   } catch (err) {
     console.log(err);
