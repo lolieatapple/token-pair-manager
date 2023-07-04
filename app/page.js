@@ -255,7 +255,7 @@ export default function Home() {
           </TableContainer>
           </Card>
           <Typography color="textSecondary" style={{marginTop: '10px'}}>
-          * All the token pairs.
+          * All the token pairs. Right click to add to new pair list.
           </Typography>
           </>
         )}
@@ -303,7 +303,7 @@ export default function Home() {
               </TableContainer>
               </Card>
               <Typography color="textSecondary" style={{marginTop: '10px'}}>
-              * All the tokens.
+              * All the tokens. Right click to add to new pair list.
               </Typography>
               </>
             )}
@@ -319,10 +319,10 @@ export default function Home() {
             </Stack>
             
             <NewPair />
+            {/* <NewPair />
             <NewPair />
             <NewPair />
-            <NewPair />
-            <NewPair />
+            <NewPair /> */}
             
 
           </Paper>

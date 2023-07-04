@@ -22,7 +22,7 @@
   background-color: #ffd700;
   border-radius: 8px;
   padding: 20px;
-  max-height: 485px;
+  height: 485px;
   overflow-y: scroll;
 }
 
