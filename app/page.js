@@ -261,9 +261,9 @@ function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken}) {
                   console.log(e);
                   setNetwork(e);
                 }} />
-              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }}>Add</Button>
-              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }}>Update</Button>
-              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }}>Del</Button>
+              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }}>SC Add</Button>
+              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }}>SC Update</Button>
+              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }}>SC Remove</Button>
               <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }}>Copy</Button>
               </Stack>
             </StyledTableCell>
@@ -323,21 +323,21 @@ export default function Home() {
   const tokens = useMemo(() => {
     let _tokens = {};
     tokenPairs.forEach(v => {
-      _tokens[v.ancestorAccount + "_" + v.ancestorChainID] = {
+      _tokens[v.ancestorAccount + "_" + v.ancestorChainID + "_" + v.ancestorSymbol] = {
         symbol: v.ancestorSymbol,
         name: v.ancestorName,
         decimals: v.ancestorDecimals,
         chainID: v.ancestorChainID,
         address: v.ancestorAccount,
       };
-      _tokens[v.fromAccount + "_" + v.fromChainID] = {
+      _tokens[v.fromAccount + "_" + v.fromChainID + "_" + v.fromSymbol] = {
         symbol: v.fromSymbol,
         name: v.fromName,
         decimals: v.fromDecimals,
         chainID: v.fromChainID,
         address: v.fromAccount,
       };
-      _tokens[v.toAccount + "_" + v.toChainID] = {
+      _tokens[v.toAccount + "_" + v.toChainID + "_" + v.symbol] = {
         symbol: v.symbol,
         name: v.name,
         decimals: v.decimals,
@@ -479,7 +479,10 @@ export default function Home() {
             </Box>
             ) : (
               <>
-              <TextField label="Filter" value={filter2} onChange={e => setFilter2(e.target.value)} size="small" variant="outlined" style={{ backgroundColor: 'white', marginBottom: '10px', border: 'none', borderRadius: 8 }} />
+              <Stack spacing={1} direction='row'>
+              <TextField label="Filter" size='small' value={filter2} onChange={e => setFilter2(e.target.value)} variant="outlined" style={{ backgroundColor: 'white', marginBottom: '10px', border: 'none', borderRadius: 8 }} />
+              <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined'>Add Token...</Button>
+              </Stack>
               <Card style={{ borderRadius: 8, overflow: 'hidden' }}>
               <TableContainer style={{ maxHeight: 300, overflow: 'auto' }}>
                 <Table stickyHeader>
@@ -524,11 +527,12 @@ export default function Home() {
             <Stack spacing={1} direction='row'>
             <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined' onClick={()=>{
               console.log('latestTokenPairId', latestTokenPairId);
-              let newPair = [(Number(latestTokenPairId)+1).toString(), ['0', '0', '0', '0', '0'], '0', '0', '0', '0'];
+              let newPair = [(Number(latestTokenPairId) + currentPairs.length +1).toString(), ['0', '0', '0', '0', '0'], '0', '0', '0', '0'];
               setCurrentPairs([...currentPairs, newPair]);
             }}>+ Add TokenPair</Button>
             <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined'>→ Move to Mainnet</Button>
             <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined'>Save</Button>
+            <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined'>Load</Button>
             <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined' onClick={()=>setCurrentPairs([])}>Clear</Button>
             <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined'>Connect Wallet</Button>
             </Stack>
