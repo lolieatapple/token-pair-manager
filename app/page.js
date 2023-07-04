@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState, useCallback } from 'react';
-import styles from './page.module.css'
-import { Paper, Grid, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Container, CircularProgress, Card, TextField, Chip, Button, Typography, Stack } from '@mui/material';
+import { Paper, Grid, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Container, CircularProgress, Card, TextField, Chip, Button, Typography, Stack, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { styled } from '@mui/system';
 import Select from "react-select";
 import { useDrag } from "react-dnd";
@@ -10,6 +9,8 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDrop } from "react-dnd";
 import { TESTNET_TOKEN_MANAGER } from './config';
+import styles from './page.module.css'
+
 
 const networkOptions = TESTNET_TOKEN_MANAGER.map((chain) => ({
   value: chain.tokenManager,
@@ -31,6 +32,7 @@ const customStyles = {
   menu: (provided, state) => ({
     ...provided,
     maxHeight: '150px',
+    zIndex: 9999,
   }),
   menuList: (provided, state) => ({
     ...provided,
@@ -115,8 +117,6 @@ const DropContainer = ({ onDrop, height, width, children, type }) => {
 function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken, chains}) {
   const id = pair[0];
 
-  console.log('tokens', tokens);
-  
   const [network, setNetwork] = useState();
 
   const ancestor = useMemo(() => {
@@ -130,8 +130,6 @@ function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken, chain
   const to = useMemo(() => {
     return Object.values(tokens).find((token) => token.address === pair[5] && token.chainID === pair[4]);
   }, [tokens, pair]);
-
-  console.log('ancestor', ancestor, from, to);
 
   const handleInputChange = (event) => {
     let newId = window.prompt('Please enter the token pair ID', event.target.value);
@@ -185,6 +183,8 @@ function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken, chain
                   <div><strong>Name:</strong> {ancestor.name}</div>
                   <div><strong>Decimals:</strong> {ancestor.decimals}</div>
                   <div><strong>ChainId:</strong> {ancestor.chainID}</div>
+                  <Chip size="small" label={chains.find(v=>Number(v.chainID) === Number(ancestor.chainID))?.chainType} />
+
                   </Stack>
                   <div><strong>Address:</strong> {ancestor.address}</div>
                 </DropContainer>
@@ -197,7 +197,7 @@ function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken, chain
                     alignItems="center"
                     height="100%"
                   >
-                    <Typography variant='body2' color='textSecondary'>Drop Token Here</Typography>
+                    <Typography variant='body2' color='textSecondary'>Drop Token ⭐ Here</Typography>
                   </Box>
                 </DropContainer>
               }
@@ -213,6 +213,7 @@ function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken, chain
                 <div><strong>Name:</strong> {from.name}</div>
                 <div><strong>Decimals:</strong> {from.decimals}</div>
                 <div><strong>ChainId:</strong> {from.chainID}</div>
+                <Chip size="small" label={chains.find(v=>Number(v.chainID) === Number(from.chainID))?.chainType} />
                 </Stack>
                 <div><strong>Address:</strong> {from.address}</div>
               </DropContainer>
@@ -225,7 +226,7 @@ function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken, chain
                     alignItems="center"
                     height="100%"
                   >
-                    <Typography variant='body2' color='textSecondary'>Drop Token Here</Typography>
+                    <Typography variant='body2' color='textSecondary'>Drop Token ⭐ Here</Typography>
                   </Box>
                 </DropContainer>
               }
@@ -241,6 +242,7 @@ function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken, chain
                   <div><strong>Name:</strong> {to.name}</div>
                   <div><strong>Decimals:</strong> {to.decimals}</div>
                   <div><strong>ChainId:</strong> {to.chainID}</div>
+                  <Chip size="small" label={chains.find(v=>Number(v.chainID) === Number(to.chainID))?.chainType} />
                   </Stack>
                   <div><strong>Address:</strong> {to.address}</div>
                 </DropContainer>
@@ -253,7 +255,7 @@ function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken, chain
                     alignItems="center"
                     height="100%"
                   >
-                    <Typography variant='body2' color='textSecondary'>Drop Token Here</Typography>
+                    <Typography variant='body2' color='textSecondary'>Drop Token ⭐ Here</Typography>
                   </Box>
                 </DropContainer>
               }
@@ -272,7 +274,10 @@ function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken, chain
               <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }}>SC Add</Button>
               <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }}>SC Update</Button>
               <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }}>SC Remove</Button>
-              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }}>Copy</Button>
+              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }} onClick={()=>{
+                //write pair to clipboard
+                navigator.clipboard.writeText(JSON.stringify(pair));
+              }}>Copy</Button>
               </Stack>
             </StyledTableCell>
           </TableRow>
@@ -292,6 +297,16 @@ export default function Home() {
   const [filter3, setFilter3] = useState('');
   const [currentPairs, setCurrentPairs] = useState([]);
   const [chains, setChains] = useState([]);
+  const [showAddToken, setShowAddToken] = useState(false);
+  const [addTokenChainId, setAddTokenChainId] = useState('');
+  const [addTokenAddress, setAddTokenAddress] = useState('');
+  const [addTokenSymbol, setAddTokenSymbol] = useState('');
+  const [addTokenName, setAddTokenName] = useState('');
+  const [addTokenDecimals, setAddTokenDecimals] = useState('');
+  const [tokenUpdater, setTokenUpdater] = useState(0);
+  const [connected, setConnected] = useState(false);
+  const [address, setAddress] = useState('');
+  
 
   useEffect(() => {
     const func = async () => {
@@ -361,8 +376,23 @@ export default function Home() {
         address: v.toAccount,
       };
     });
+    // load local storage custom token 
+    const localTokens = localStorage.getItem('custom_tokens_testnet');
+    if (localTokens) {
+      const customTokens = JSON.parse(localTokens);
+      customTokens.forEach(v => {
+        _tokens[v.address + "_" + v.chainID + "_" + v.symbol + '_' + chains.find(m=>Number(m.chainID) === Number(v.chainID))?.chainType] = {
+          symbol: v.symbol,
+          name: v.name,
+          decimals: v.decimals,
+          chainID: v.chainID,
+          address: v.address,
+        };
+      });
+    }
+
     return _tokens;
-  }, [tokenPairs, chains]);
+  }, [tokenPairs, chains, tokenUpdater]);
 
   const latestTokenPairId = useMemo(()=>{
     if (tokenPairs.length === 0) return 0;
@@ -374,7 +404,13 @@ export default function Home() {
     }
     return 999999;
   }, [tokenPairs])
-  // console.log('latestTokenPairId', latestTokenPairId);
+  
+  const chainOptions = useMemo(()=>{
+    return chains.map((chain) => ({
+      value: chain.chainID,
+      label: chain.chainName,
+    }));
+  }, [chains]);
 
   const onPairDrop = useCallback((item)=>{
     let id = item.id;
@@ -413,8 +449,6 @@ export default function Home() {
 
 
 
-
-  console.log('currentPairs.length', currentPairs);
 
   return (
     <Container maxWidth="lg" className={styles.container}>
@@ -455,7 +489,10 @@ export default function Home() {
                     v.id.toLowerCase().includes(filter.toLowerCase()) ||
                     v.ancestorChainID.toLowerCase().includes(filter.toLowerCase()) ||
                     v.fromChainID.toLowerCase().includes(filter.toLowerCase()) ||
-                    v.toChainID.toLowerCase().includes(filter.toLowerCase())
+                    v.toChainID.toLowerCase().includes(filter.toLowerCase()) ||
+                    chains.find(m=>Number(m.chainID) === Number(v.fromChainID))?.chainType?.toLowerCase().includes(filter.toLowerCase()) ||
+                    chains.find(m=>Number(m.chainID) === Number(v.toChainID))?.chainType?.toLowerCase().includes(filter.toLowerCase()) ||
+                    chains.find(m=>Number(m.chainID) === Number(v.ancestorChainID))?.chainType?.toLowerCase().includes(filter.toLowerCase())
                 }).map((row, index) => (
                   <TableRow key={row.id} sx={{ 
                     '&:nth-of-type(odd)': { backgroundColor: '#bae4e2' },
@@ -496,7 +533,7 @@ export default function Home() {
               <>
               <Stack spacing={1} direction='row'>
               <TextField label="Filter" size='small' value={filter2} onChange={e => setFilter2(e.target.value)} variant="outlined" style={{ backgroundColor: 'white', marginBottom: '10px', border: 'none', borderRadius: 8 }} />
-              <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined'>Add Token...</Button>
+              <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined' onClick={()=>setShowAddToken(true)}>Add Token...</Button>
               </Stack>
               <Card style={{ borderRadius: 8, overflow: 'hidden' }}>
               <TableContainer style={{ maxHeight: 300, overflow: 'auto' }}>
@@ -546,10 +583,50 @@ export default function Home() {
               setCurrentPairs([...currentPairs, newPair]);
             }}>+ Add TokenPair</Button>
             <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined'>→ Move to Mainnet</Button>
-            <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined'>Save</Button>
-            <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined'>Load</Button>
+            <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined' onClick={()=>{
+              // download currentPairs JSON from browser to local file system
+              const element = document.createElement("a");
+              const file = new Blob([JSON.stringify(currentPairs)], {type: 'text/plain'});
+              element.href = URL.createObjectURL(file);
+              // use date time for file name
+              element.download = "TESTNET_TOKEN_MANAGER_" + new Date().toISOString().replace(/:/g, '-') + ".json";
+              document.body.appendChild(element); // Required for this to work in FireFox
+              element.click();
+            }}>Save</Button>
+            <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined' onClick={()=>{
+              // load currentPairs JSON from local file system to browser
+              const element = document.createElement("input");
+              element.type = "file";
+              element.accept = ".json";
+              element.onchange = (event) => {
+                const file = event.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                  let _pairs = JSON.parse(event.target.result);
+                  console.log('_pairs', _pairs);
+                  setCurrentPairs(_pairs);
+                };
+                reader.readAsText(file);
+              }
+              element.click();
+            }}>Load</Button>
             <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined' onClick={()=>setCurrentPairs([])}>Clear</Button>
-            <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined'>Connect Wallet</Button>
+            <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined' onClick={async ()=>{
+              if (connected) {
+                setAddress('');
+                setConnected(false);
+                return;
+              }
+              // connect metamask 
+              if (!window.ethereum) {
+                alert('Please install MetaMask first.');
+                return;
+              }
+              const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+              const account = accounts[0];
+              setAddress(account);
+              setConnected(true);
+            }}>{connected && address ? address.slice(0, 6) + '...' + address.slice(-4) : 'Connect Wallet'}</Button>
             </Stack>
             {
               currentPairs.length > 0 && currentPairs.map((v, i)=>{
@@ -596,6 +673,59 @@ export default function Home() {
       </Grid>
     </Box>
     </DndProvider>
+    {
+      showAddToken && (
+      <Dialog open={showAddToken} onClose={()=>setShowAddToken(false)} aria-labelledby="form-dialog-title" sx={{borderRadius: 10}}>
+      <DialogTitle id="form-dialog-title">Add Token</DialogTitle>
+      <DialogContent>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+          <Select placeholder="Select Chain" options={chainOptions}
+            styles={customStyles}
+            onChange={(e)=>{
+              console.log(e);
+              setAddTokenChainId(e.value);
+            }} />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField margin="dense" id="symbol" label="Symbol" type="text" fullWidth value={addTokenSymbol} onChange={e=>setAddTokenSymbol(e.target.value)} />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField margin="dense" id="name" label="Name" type="text" fullWidth value={addTokenName} onChange={e=>setAddTokenName(e.target.value)} />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField margin="dense" id="decimals" label="Decimals" type="text" fullWidth value={addTokenDecimals} onChange={e=>setAddTokenDecimals(e.target.value)} />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField margin="dense" id="address" label="Address" type="text" fullWidth value={addTokenAddress} onChange={e=>setAddTokenAddress(e.target.value)} />
+          </Grid>
+        </Grid>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={()=>setShowAddToken(false)}>
+          Cancel
+        </Button>
+        <Button onClick={()=>{
+          // load localStorage testnet tokens 
+          let customTokens = JSON.parse(localStorage.getItem('custom_tokens_testnet') || '[]');
+          customTokens.push({
+            chainID: addTokenChainId,
+            symbol: addTokenSymbol,
+            name: addTokenName,
+            decimals: addTokenDecimals,
+            address: addTokenAddress
+          });
+          localStorage.setItem('custom_tokens_testnet', JSON.stringify(customTokens));
+          setTokenUpdater(Date.now());
+          setShowAddToken(false);
+        }}>
+          Confirm
+        </Button>
+      </DialogActions>
+      </Dialog>
+      )
+    }
+    
     </Container>
   )
 }

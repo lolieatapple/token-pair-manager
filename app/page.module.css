@@ -1,5 +1,5 @@
 .upperPart {
-  background-color: #add8e6;
+  background-color: #add8e6!important;
   opacity: 0.8;
   border-radius: 8px;
   padding: 20px;
@@ -9,7 +9,7 @@
 
 .leftPart {
   opacity: 0.8;
-  background-color: #90ee90;
+  background-color: #90ee90!important;
   border-radius: 8px;
   padding: 20px;
 }
@@ -17,7 +17,7 @@
 .middlePart {
   opacity: 0.8;
 
-  background-color: #f08080;
+  background-color: #f08080!important;
   border-radius: 8px;
   padding: 20px;
 }
@@ -25,7 +25,7 @@
 .rightPart {
   opacity: 0.8;
 
-  background-color: #ffd700;
+  background-color: #f0dbf7!important;
   border-radius: 8px;
   padding: 20px;
   height: 385px;
