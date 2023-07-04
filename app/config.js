@@ -117,7 +117,7 @@ export const TESTNET_TOKEN_MANAGER = [
     "chainType": "ZKETH",
     "chainID": "1073741837",
     "chainName": "zkSync Era",
-    "tokenManager": "0x017ab6485ff91c1a0a16b90e71f92b935b7213d3",
+    "tokenManager": "0xe81a17a8C04BEb70058E04d0927010504f91f034",
   }
 ]
 

@@ -10,6 +10,8 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDrop } from "react-dnd";
 import { TESTNET_TOKEN_MANAGER } from './config';
 import styles from './page.module.css'
+import { ethers } from 'ethers';
+import { TOKEN_MANAGER_ABIS } from './abi';
 
 
 const networkOptions = TESTNET_TOKEN_MANAGER.map((chain) => ({
@@ -271,9 +273,63 @@ function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken, updat
                   console.log(e);
                   setNetwork(e);
                 }} />
-              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }}>Add</Button>
-              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }}>Update</Button>
-              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }}>Remove</Button>
+              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }} onClick={async ()=>{
+                try {
+                  console.log('pair', pair);
+                  console.log('network', network);
+                  if (!network) {
+                    window.alert('Please select a chain');
+                    return;
+                  }
+                  let accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                  console.log(accounts);
+                  // create sc instance and call transfer by ethers.js 
+                  const sc = new ethers.Contract(network.value, TOKEN_MANAGER_ABIS, new ethers.providers.Web3Provider(window.ethereum).getSigner());
+                  // call addTokenPair function 
+                  const tx = await sc.addTokenPair(...pair);
+                  console.log(id, 'tx', tx);
+                } catch (error) {
+                  console.error(error);
+                }
+              }}>Add</Button>
+              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }} onClick={async ()=>{
+                try {
+                  console.log('pair', pair);
+                  console.log('network', network);
+                  if (!network) {
+                    window.alert('Please select a chain');
+                    return;
+                  }
+                  let accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                  console.log(accounts);
+                  // create sc instance and call transfer by ethers.js 
+                  const sc = new ethers.Contract(network.value, TOKEN_MANAGER_ABIS, new ethers.providers.Web3Provider(window.ethereum).getSigner());
+                  // call addTokenPair function 
+                  const tx = await sc.updateTokenPair(...pair);
+                  console.log(id, 'tx', tx);
+                } catch (error) {
+                  console.error(error);
+                }
+              }}>Update</Button>
+              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }} onClick={async ()=>{
+                try {
+                  console.log('pair', pair);
+                  console.log('network', network);
+                  if (!network) {
+                    window.alert('Please select a chain');
+                    return;
+                  }
+                  let accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                  console.log(accounts);
+                  // create sc instance and call transfer by ethers.js 
+                  const sc = new ethers.Contract(network.value, TOKEN_MANAGER_ABIS, new ethers.providers.Web3Provider(window.ethereum).getSigner());
+                  // call addTokenPair function 
+                  const tx = await sc.removeTokenPair(pair[0]);
+                  console.log(id, 'tx', tx);
+                } catch (error) {
+                  console.error(error);
+                }
+              }}>Remove</Button>
               <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }} onClick={()=>{
                 //write pair to clipboard
                 navigator.clipboard.writeText(JSON.stringify(pair));
@@ -387,7 +443,7 @@ export default function Home() {
       };
     });
     // load local storage custom token 
-    const localTokens = localStorage.getItem('custom_tokens_testnet');
+    const localTokens = window.localStorage.getItem('custom_tokens_testnet');
     if (localTokens) {
       const customTokens = JSON.parse(localTokens);
       customTokens.forEach(v => {
