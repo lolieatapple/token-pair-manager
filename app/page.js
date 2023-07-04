@@ -114,7 +114,7 @@ const DropContainer = ({ onDrop, height, width, children, type }) => {
   );
 };
 
-function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken, chains}) {
+function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken, updatePair, chains}) {
   const id = pair[0];
 
   const [network, setNetwork] = useState();
@@ -271,13 +271,23 @@ function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken, chain
                   console.log(e);
                   setNetwork(e);
                 }} />
-              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }}>SC Add</Button>
-              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }}>SC Update</Button>
-              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }}>SC Remove</Button>
+              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }}>Add</Button>
+              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }}>Update</Button>
+              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }}>Remove</Button>
               <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }} onClick={()=>{
                 //write pair to clipboard
                 navigator.clipboard.writeText(JSON.stringify(pair));
               }}>Copy</Button>
+              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }} onClick={async ()=>{
+                //read pair from clipboard
+                const text = await navigator.clipboard.readText();
+                try {
+                  const _pair = JSON.parse(text);
+                  updatePair(id, _pair);
+                } catch (error) {
+                  console.log(error);
+                }
+              }}>Paste</Button>
               </Stack>
             </StyledTableCell>
           </TableRow>
@@ -404,7 +414,7 @@ export default function Home() {
     }
     return 999999;
   }, [tokenPairs])
-  
+
   const chainOptions = useMemo(()=>{
     return chains.map((chain) => ({
       value: chain.chainID,
@@ -659,6 +669,18 @@ export default function Home() {
                       } else {
                         _pairs[i][1] = token.slice();
                       }
+                      break;
+                    }
+                  }
+                  setCurrentPairs(_pairs);
+                }}
+                updatePair={(id, _pair) => {
+                  console.log('update', id, _pair);
+                  let _pairs = currentPairs.slice();
+                  for (let i=0; i<_pairs.length; i++) {
+                    if(Number(_pairs[i][0]) === Number(id)) {
+                      _pairs[i] = _pair.slice();
+                      _pairs[i][0] = id;
                       break;
                     }
                   }
