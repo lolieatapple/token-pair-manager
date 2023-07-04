@@ -80,24 +80,67 @@ const DropZone = ({ onDrop, height, width, placeholder }) => {
   );
 };
 
-function NewPair({pair, tokens, updatePairId, removeItem}) {
+const DropContainer = ({ onDrop, height, width, children, type }) => {
+  const [{ isOver }, drop] = useDrop(() => ({
+    accept: "item",
+    drop: (item, monitor) => onDrop(item, type),
+    collect: (monitor) => ({
+      isOver: !!monitor.isOver(),
+    }),
+  }));
+
+  return (
+    <div
+      ref={drop}
+      style={{
+        height,
+        width,
+        border: "1px dashed gray",
+        backgroundColor: isOver ? "lightgreen" : "transparent",
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
+function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken}) {
   const id = pair[0];
 
   console.log('tokens', tokens);
   
   const [network, setNetwork] = useState();
 
-  // const debouncedInputHandler = debounce(value => {
-  //   console.log('debouncedInputHandler', value);
-  //   updatePairId(id, value)
-  // }, 500)  // 在用户停止输入500ms后调用处理函数
-  
+  const ancestor = useMemo(() => {
+    return Object.values(tokens).find((token) => token.address === pair[1][0] && token.chainID === pair[1][4]);
+  }, [tokens, pair]);
+
+  const from = useMemo(() => {
+    return Object.values(tokens).find((token) => token.address === pair[3] && token.chainID === pair[2]);
+  }, [tokens, pair]);
+
+  const to = useMemo(() => {
+    return Object.values(tokens).find((token) => token.address === pair[5] && token.chainID === pair[4]);
+  }, [tokens, pair]);
+
+  console.log('ancestor', ancestor, from, to);
+
   const handleInputChange = (event) => {
     let newId = window.prompt('Please enter the token pair ID', event.target.value);
     if (newId) {
       updatePairId(id, newId);
     }
   };
+
+  const onTokenDrop = useCallback((item, type)=>{
+    let dropId = item.id;
+    console.log('drop', dropId);
+    console.log('type', type);
+    if(!dropId.includes('token,')) return;
+    let tokenInfo = dropId.replace('token,', '').split(',');
+    console.log('tokenInfo', tokenInfo);
+    updatePairToken(id, type, tokenInfo);
+  }, []);
 
   return <Card style={{ borderRadius: 8, overflow: 'hidden', marginBottom: '10px' }}>
     <TableContainer style={{ maxHeight: 400, overflow: 'auto' }}>
@@ -126,38 +169,86 @@ function NewPair({pair, tokens, updatePairId, removeItem}) {
           </TableRow>
           <TableRow>
             <StyledTableCell style={{backgroundColor: '#b6f4cc', minWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }} >Ancestor Info</StyledTableCell>
-            <StyledTableCell style={{maxWidth: 260, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-              <Stack spacing={1} direction='row' >
-              <div><strong>Symbol:</strong> USDT</div>
-              <div><strong>Name:</strong> USDT</div>
-              <div><strong>Decimals:</strong> USDT</div>
-              <div><strong>ChainId:</strong> 123456</div>
-              </Stack>
-              <div><strong>Address:</strong> 0xf6e24e7191b9669dc8d52c6be6008e783e5c01cb</div>
+            <StyledTableCell style={{maxWidth: 260, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', fontSize: '12px' }}>
+              {
+                ancestor && <DropContainer onDrop={onTokenDrop} type='ancestor'>
+                  <Stack spacing={1} direction='row' >
+                  <div><strong>Symbol:</strong> {ancestor.symbol}</div>
+                  <div><strong>Name:</strong> {ancestor.name}</div>
+                  <div><strong>Decimals:</strong> {ancestor.decimals}</div>
+                  <div><strong>ChainId:</strong> {ancestor.chainID}</div>
+                  </Stack>
+                  <div><strong>Address:</strong> {ancestor.address}</div>
+                </DropContainer>
+              }
+              {
+                !ancestor && <DropContainer onDrop={onTokenDrop} type='ancestor'>
+                  <Box
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    height="100%"
+                  >
+                    <Typography variant='body2' color='textSecondary'>Drop Token Here</Typography>
+                  </Box>
+                </DropContainer>
+              }
             </StyledTableCell>
           </TableRow>
           <TableRow>
-            <StyledTableCell style={{backgroundColor: '#b6f4cc', maxWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }} >From Account</StyledTableCell>
-            <StyledTableCell style={{maxWidth: 260, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-              <Stack spacing={1} direction='row' >
-              <div><strong>Symbol:</strong> USDT</div>
-              <div><strong>Name:</strong> USDT</div>
-              <div><strong>Decimals:</strong> USDT</div>
-              <div><strong>ChainId:</strong> 123456</div>
-              </Stack>
-              <div><strong>Address:</strong> 0xf6e24e7191b9669dc8d52c6be6008e783e5c01cb</div>
+            <StyledTableCell style={{backgroundColor: '#b6f4cc', minWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }} >From Account</StyledTableCell>
+            <StyledTableCell style={{maxWidth: 260, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', fontSize: '12px' }}>
+              {
+                from && <DropContainer onDrop={onTokenDrop} type='from'>
+                <Stack spacing={1} direction='row' >
+                <div><strong>Symbol:</strong> {from.symbol}</div>
+                <div><strong>Name:</strong> {from.name}</div>
+                <div><strong>Decimals:</strong> {from.decimals}</div>
+                <div><strong>ChainId:</strong> {from.chainID}</div>
+                </Stack>
+                <div><strong>Address:</strong> {from.address}</div>
+              </DropContainer>
+              }
+              {
+                !from && <DropContainer onDrop={onTokenDrop} type='from'>
+                  <Box
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    height="100%"
+                  >
+                    <Typography variant='body2' color='textSecondary'>Drop Token Here</Typography>
+                  </Box>
+                </DropContainer>
+              }
             </StyledTableCell>
           </TableRow>
           <TableRow>
-            <StyledTableCell style={{backgroundColor: '#b6f4cc', maxWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }} >To Account</StyledTableCell>
-            <StyledTableCell style={{maxWidth: 260, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-              <Stack spacing={1} direction='row' >
-              <div><strong>Symbol:</strong> USDT</div>
-              <div><strong>Name:</strong> USDT</div>
-              <div><strong>Decimals:</strong> USDT</div>
-              <div><strong>ChainId:</strong> 123456</div>
-              </Stack>
-              <div><strong>Address:</strong> 0xf6e24e7191b9669dc8d52c6be6008e783e5c01cb</div>
+            <StyledTableCell style={{backgroundColor: '#b6f4cc', minWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }} >To Account</StyledTableCell>
+            <StyledTableCell style={{maxWidth: 260, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', fontSize: '12px' }}>
+              {
+                to && <DropContainer onDrop={onTokenDrop} type='to'>
+                  <Stack spacing={1} direction='row' >
+                  <div><strong>Symbol:</strong> {to.symbol}</div>
+                  <div><strong>Name:</strong> {to.name}</div>
+                  <div><strong>Decimals:</strong> {to.decimals}</div>
+                  <div><strong>ChainId:</strong> {to.chainID}</div>
+                  </Stack>
+                  <div><strong>Address:</strong> {to.address}</div>
+                </DropContainer>
+              }
+              {
+                !to && <DropContainer onDrop={onTokenDrop} type='to'>
+                  <Box
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    height="100%"
+                  >
+                    <Typography variant='body2' color='textSecondary'>Drop Token Here</Typography>
+                  </Box>
+                </DropContainer>
+              }
             </StyledTableCell>
           </TableRow>
           <TableRow>
@@ -232,21 +323,21 @@ export default function Home() {
   const tokens = useMemo(() => {
     let _tokens = {};
     tokenPairs.forEach(v => {
-      _tokens[v.ancestorSymbol + "_" + v.ancestorChainID] = {
+      _tokens[v.ancestorAccount + "_" + v.ancestorChainID] = {
         symbol: v.ancestorSymbol,
         name: v.ancestorName,
         decimals: v.ancestorDecimals,
         chainID: v.ancestorChainID,
         address: v.ancestorAccount,
       };
-      _tokens[v.fromSymbol + "_" + v.fromChainID] = {
+      _tokens[v.fromAccount + "_" + v.fromChainID] = {
         symbol: v.fromSymbol,
         name: v.fromName,
         decimals: v.fromDecimals,
         chainID: v.fromChainID,
         address: v.fromAccount,
       };
-      _tokens[v.toSymbol + "_" + v.toChainID] = {
+      _tokens[v.toAccount + "_" + v.toChainID] = {
         symbol: v.symbol,
         name: v.name,
         decimals: v.decimals,
@@ -270,7 +361,7 @@ export default function Home() {
   }, [tokenPairs])
   // console.log('latestTokenPairId', latestTokenPairId);
 
-  const onDrop = useCallback((item)=>{
+  const onPairDrop = useCallback((item)=>{
     let id = item.id;
     console.log('drop', id);
     console.log('tokenPairs in drop', tokenPairs.length);
@@ -304,6 +395,9 @@ export default function Home() {
     ];
     setCurrentPairs(prevPairs => [...prevPairs, formatPair]);
   }, [tokenPairs]);
+
+
+
 
   console.log('currentPairs.length', currentPairs);
 
@@ -341,7 +435,13 @@ export default function Home() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {tokenPairs.filter(v=>Number(v.id) < 10000).filter(v=>v.ancestorSymbol.toLowerCase().includes(filter.toLowerCase()) || v.id.toLowerCase().includes(filter.toLowerCase())).map((row, index) => (
+                {tokenPairs.filter(v=>Number(v.id) < 10000).filter(v=>{ 
+                  return v.ancestorSymbol.toLowerCase().includes(filter.toLowerCase()) || 
+                    v.id.toLowerCase().includes(filter.toLowerCase()) ||
+                    v.ancestorChainID.toLowerCase().includes(filter.toLowerCase()) ||
+                    v.fromChainID.toLowerCase().includes(filter.toLowerCase()) ||
+                    v.toChainID.toLowerCase().includes(filter.toLowerCase())
+                }).map((row, index) => (
                   <TableRow key={row.id} sx={{ 
                     '&:nth-of-type(odd)': { backgroundColor: '#bae4e2' },
                     '&:nth-of-type(even)': { backgroundColor: '#fcfcfc' }
@@ -371,7 +471,7 @@ export default function Home() {
         
       </Paper>
       <Grid container spacing={2} className={styles.lowerPart} >
-        <Grid item xs={6}>
+        <Grid item xs={5}>
           <Paper elevation={3} className={styles.leftPart}>
           {loading ? (
             <Box display="flex" justifyContent="center" p={1}>
@@ -400,7 +500,7 @@ export default function Home() {
                         }}>
                         <StyledTableCell style={{ minWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}><Chip size="small" label={chains.find(v=>Number(v.chainId) === Number(tokens[row].chainID))?.chainType} /></StyledTableCell>
                         <StyledTableCell component="th" scope="row" style={{ maxWidth: 120, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                          <Stack spacing={2} direction='row'><div>{tokens[row].symbol}</div><DraggableItem id={'token_'+row}>⭐</DraggableItem></Stack>
+                          <Stack spacing={2} direction='row'><div>{tokens[row].symbol}</div><DraggableItem id={'token,' +tokens[row].address + ',' + tokens[row].name + ',' + tokens[row].symbol + ',' + tokens[row].decimals + ','+tokens[row].chainID}>⭐</DraggableItem></Stack>
                         </StyledTableCell>
                         <StyledTableCell style={{ fontSize: '12px', maxWidth: 120, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{tokens[row].name}</StyledTableCell>
                         <StyledTableCell style={{ maxWidth: 30, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{tokens[row].decimals}</StyledTableCell>
@@ -419,10 +519,14 @@ export default function Home() {
           </Paper>
         </Grid>
 
-        <Grid item xs={6}>
+        <Grid item xs={7}>
           <Paper elevation={3} className={styles.rightPart}>
             <Stack spacing={1} direction='row'>
-            <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined'>+ Add TokenPair</Button>
+            <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined' onClick={()=>{
+              console.log('latestTokenPairId', latestTokenPairId);
+              let newPair = [(Number(latestTokenPairId)+1).toString(), ['0', '0', '0', '0', '0'], '0', '0', '0', '0'];
+              setCurrentPairs([...currentPairs, newPair]);
+            }}>+ Add TokenPair</Button>
             <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined'>→ Move to Mainnet</Button>
             <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined'>Save</Button>
             <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined' onClick={()=>setCurrentPairs([])}>Clear</Button>
@@ -430,7 +534,7 @@ export default function Home() {
             </Stack>
             {
               currentPairs.length > 0 && currentPairs.map((v, i)=>{
-                return <NewPair key={JSON.stringify(v)} pair={v} tokens updatePairId={(oldId, id)=>{
+                return <NewPair key={JSON.stringify(v)} pair={v} tokens={tokens} updatePairId={(oldId, id)=>{
                   console.log('update', id);
                   let _pairs = currentPairs.slice();
                   for (let i=0; i<_pairs.length; i++) {
@@ -444,10 +548,30 @@ export default function Home() {
                   console.log('remove', id);
                   let _pairs = currentPairs.slice();
                   setCurrentPairs(_pairs.filter(v=>Number(v[0]) !== Number(id)));
-                }} />
+                }}
+                updatePairToken={(id, type, token ) => {
+                  console.log('update', id, token, type);
+                  let _pairs = currentPairs.slice();
+                  for (let i=0; i<_pairs.length; i++) {
+                    if(Number(_pairs[i][0]) === Number(id)) {
+                      if(type === 'from') {
+                        _pairs[i][2] = token.slice()[4];
+                        _pairs[i][3] = token.slice()[0];
+                      } else if(type === 'to') {
+                        _pairs[i][4] = token[4];
+                        _pairs[i][5] = token[0];
+                      } else {
+                        _pairs[i][1] = token.slice();
+                      }
+                      break;
+                    }
+                  }
+                  setCurrentPairs(_pairs);
+                }}
+                />
               })
             }
-            <DropZone width="100%" height="90%" placeholder="Drag and Drop Token Pair ⭐ Here to Modify" onDrop={onDrop} tokenPairs={tokenPairs} currentPairs={currentPairs} />
+            <DropZone width="100%" height="90%" placeholder="Drag and Drop Token Pair ⭐ Here to Modify" onDrop={onPairDrop} tokenPairs={tokenPairs} currentPairs={currentPairs} />
           </Paper>
         </Grid>
       </Grid>
