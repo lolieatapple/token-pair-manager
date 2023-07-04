@@ -2,9 +2,11 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import styles from './page.module.css'
-import { Paper, Grid, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Container, CircularProgress, Card, TextField, Chip, Button, Typography } from '@mui/material';
+import { Paper, Grid, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Container, CircularProgress, Card, TextField, Chip, Button, Typography, Stack } from '@mui/material';
 import { styled } from '@mui/system';
 import { chains } from './config';
+import Select from "react-select";
+
 
 // 使用 styled 工具创建自定义 TableCell 组件，定义一些基本样式
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -19,21 +21,95 @@ const StyledTableHeaderCell = styled(StyledTableCell)({
   fontWeight: 'bold',
 });
 
+const networkOptions = chains.map((chain) => ({
+  value: chain.chainName,
+  label: chain.chainName,
+}));
+
 function NewPair() {
-  return <Card style={{ borderRadius: 8, overflow: 'hidden' }}>
-  <TableContainer style={{ maxHeight: 400, overflow: 'auto' }}>
-    <Table stickyHeader>
-      <TableHead>
-        <TableRow>
-          <StyledTableHeaderCell>Name</StyledTableHeaderCell>
-          <StyledTableHeaderCell>Value</StyledTableHeaderCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        
-      </TableBody>
-    </Table>
-  </TableContainer>
+  const [value, setValue] = useState('477');
+  const [network, setNetwork] = useState();
+
+  const handleInputChange = (event) => {
+    setValue(event.target.value);
+  };
+
+  return <Card style={{ borderRadius: 8, overflow: 'hidden', marginBottom: '10px' }}>
+    <TableContainer style={{ maxHeight: 400, overflow: 'auto' }}>
+      <Table stickyHeader>
+        <TableHead>
+          <TableRow>
+            <StyledTableHeaderCell>Name</StyledTableHeaderCell>
+            <StyledTableHeaderCell>Value</StyledTableHeaderCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <StyledTableCell style={{backgroundColor: '#b6f4cc', minWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }} >Token Pair ID</StyledTableCell>
+            <StyledTableCell>
+              <TextField 
+                value={value} 
+                size='small'
+                onChange={handleInputChange} 
+                style={{ width: '100%' }} 
+              />
+            </StyledTableCell>
+          </TableRow>
+          <TableRow>
+            <StyledTableCell style={{backgroundColor: '#b6f4cc', minWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }} >Ancestor Info</StyledTableCell>
+            <StyledTableCell style={{maxWidth: 260, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+              <Stack spacing={1} direction='row' >
+              <div><strong>Symbol:</strong> USDT</div>
+              <div><strong>Name:</strong> USDT</div>
+              <div><strong>Decimals:</strong> USDT</div>
+              <div><strong>ChainId:</strong> 123456</div>
+              </Stack>
+              <div><strong>Address:</strong> 0xf6e24e7191b9669dc8d52c6be6008e783e5c01cb</div>
+            </StyledTableCell>
+          </TableRow>
+          <TableRow>
+            <StyledTableCell style={{backgroundColor: '#b6f4cc', maxWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }} >From Account</StyledTableCell>
+            <StyledTableCell style={{maxWidth: 260, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+              <Stack spacing={1} direction='row' >
+              <div><strong>Symbol:</strong> USDT</div>
+              <div><strong>Name:</strong> USDT</div>
+              <div><strong>Decimals:</strong> USDT</div>
+              <div><strong>ChainId:</strong> 123456</div>
+              </Stack>
+              <div><strong>Address:</strong> 0xf6e24e7191b9669dc8d52c6be6008e783e5c01cb</div>
+            </StyledTableCell>
+          </TableRow>
+          <TableRow>
+            <StyledTableCell style={{backgroundColor: '#b6f4cc', maxWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }} >To Account</StyledTableCell>
+            <StyledTableCell style={{maxWidth: 260, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+              <Stack spacing={1} direction='row' >
+              <div><strong>Symbol:</strong> USDT</div>
+              <div><strong>Name:</strong> USDT</div>
+              <div><strong>Decimals:</strong> USDT</div>
+              <div><strong>ChainId:</strong> 123456</div>
+              </Stack>
+              <div><strong>Address:</strong> 0xf6e24e7191b9669dc8d52c6be6008e783e5c01cb</div>
+            </StyledTableCell>
+          </TableRow>
+          <TableRow>
+            <StyledTableCell style={{backgroundColor: '#b6f4cc', maxWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }} >Operations</StyledTableCell>
+            <StyledTableCell >
+              <Stack spacing={1} direction='row' >
+              <Select placeholder="Select Network..." menuPlacement="top" options={networkOptions} value={network}
+                
+                onChange={(e)=>{
+                  console.log(e);
+                  setNetwork(e);
+                }} />
+              <Button variant='outlined' color='secondary' style={{ textTransform: 'none' }}>Add</Button>
+              <Button variant='outlined' color='secondary' style={{ textTransform: 'none' }}>Update</Button>
+              <Button variant='outlined' color='secondary' style={{ textTransform: 'none' }}>Copy</Button>
+              </Stack>
+            </StyledTableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </TableContainer>
   </Card>
 }
 
@@ -186,7 +262,7 @@ export default function Home() {
         
       </Paper>
       <Grid container spacing={2} className={styles.lowerPart} >
-        <Grid item xs={4}>
+        <Grid item xs={6}>
           <Paper elevation={3} className={styles.leftPart}>
           {loading ? (
             <Box display="flex" justifyContent="center" p={1}>
@@ -233,53 +309,22 @@ export default function Home() {
             )}
           </Paper>
         </Grid>
-        <Grid item xs={4}>
-          <Paper elevation={3} className={styles.middlePart}>
-          {loading ? (
-            <Box display="flex" justifyContent="center" p={1}>
-              <CircularProgress />
-            </Box>
-            ) : (
-              <>
-              <TextField label="Filter" value={filter3} onChange={e => setFilter3(e.target.value)} size="small" variant="outlined" style={{ backgroundColor: 'white', marginBottom: '10px', border: 'none', borderRadius: 8 }} />
-              <Card style={{ borderRadius: 8, overflow: 'hidden' }}>
-              <TableContainer style={{ maxHeight: 400, overflow: 'auto' }}>
-                <Table stickyHeader>
-                  <TableHead>
-                    <TableRow>
-                      <StyledTableHeaderCell>ChainType</StyledTableHeaderCell>
-                      <StyledTableHeaderCell>ChainName</StyledTableHeaderCell>
-                      <StyledTableHeaderCell>ChainID</StyledTableHeaderCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {chains.filter(v=>v.chainType.toLowerCase().includes(filter3.toLowerCase())||v.chainName.toLowerCase().includes(filter3.toLowerCase())).map((row, index) => (
-                      <TableRow key={row.chainId} sx={{ 
-                        '&:nth-of-type(odd)': { backgroundColor: '#bae4e2' },
-                        '&:nth-of-type(even)': { backgroundColor: '#fcfcfc' }
-                        }}>
-                        <StyledTableCell style={{ minWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}><Chip size="small" label={row?.chainType} /></StyledTableCell>
-                        <StyledTableCell component="th" scope="row" style={{ maxWidth: 120, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                          {row.chainName}
-                        </StyledTableCell>
-                        <StyledTableCell style={{ fontSize: '12px', maxWidth: 120, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{row.chainId}</StyledTableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              </Card>
-              <Typography color="textSecondary" style={{marginTop: '10px'}}>
-              * All the supported blockchains.
-              </Typography>
-              </>
-            )}
-          </Paper>
-        </Grid>
-        <Grid item xs={4}>
+
+        <Grid item xs={6}>
           <Paper elevation={3} className={styles.rightPart}>
-            <Button style={{marginBottom: '10px'}} fullWidth variant='outlined'>+</Button>
+            <Stack spacing={1} direction='row'>
+            <Button style={{marginBottom: '10px', textTransform:'none'}} fullWidth variant='outlined'>+ Add TokenPair</Button>
+            <Button style={{marginBottom: '10px', textTransform:'none'}} fullWidth variant='outlined'>→ Move to Mainnet</Button>
+            <Button style={{marginBottom: '10px', textTransform:'none'}} fullWidth variant='outlined'>Connect Wallet</Button>
+            </Stack>
+            
             <NewPair />
+            <NewPair />
+            <NewPair />
+            <NewPair />
+            <NewPair />
+            
+
           </Paper>
         </Grid>
       </Grid>
