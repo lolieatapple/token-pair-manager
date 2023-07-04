@@ -148,7 +148,7 @@ function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken, updat
     let tokenInfo = dropId.replace('token,', '').split(',');
     console.log('tokenInfo', tokenInfo);
     updatePairToken(id, type, tokenInfo);
-  }, []);
+  }, [id, updatePairToken]);
 
   return <Card style={{ borderRadius: 8, overflow: 'hidden', marginBottom: '10px' }}>
     <TableContainer style={{ maxHeight: 400, overflow: 'auto' }}>
@@ -416,7 +416,9 @@ export default function Home() {
     
   }, [updater]);
 
-  const tokens = useMemo(() => {
+  const [tokens, setTokens] = useState({});
+
+  useEffect(() => {
     let _tokens = {};
     
     tokenPairs.forEach(v => {
@@ -457,7 +459,7 @@ export default function Home() {
       });
     }
 
-    return _tokens;
+    setTokens(_tokens);
   }, [tokenPairs, chains, tokenUpdater]);
 
   const latestTokenPairId = useMemo(()=>{
