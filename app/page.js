@@ -122,15 +122,15 @@ function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken, updat
   const [network, setNetwork] = useState();
 
   const ancestor = useMemo(() => {
-    return Object.values(tokens).find((token) => token.address === pair[1][0] && token.chainID === pair[1][4]);
+    return Object.values(tokens).find((token) => token.address.toLowerCase() === pair[1][0].toLowerCase() && token.chainID === pair[1][4]);
   }, [tokens, pair]);
 
   const from = useMemo(() => {
-    return Object.values(tokens).find((token) => token.address === pair[3] && token.chainID === pair[2]);
+    return Object.values(tokens).find((token) => token.address.toLowerCase() === pair[3].toLowerCase() && token.chainID === pair[2]);
   }, [tokens, pair]);
 
   const to = useMemo(() => {
-    return Object.values(tokens).find((token) => token.address === pair[5] && token.chainID === pair[4]);
+    return Object.values(tokens).find((token) => token.address.toLowerCase() === pair[5].toLowerCase() && token.chainID === pair[4]);
   }, [tokens, pair]);
 
   const handleInputChange = (event) => {
