@@ -13,7 +13,7 @@ import styles from './page.module.css'
 import { ethers } from 'ethers';
 import { TOKEN_MANAGER_ABIS } from './abi';
 import { useRouter } from 'next/navigation';
-
+import { debounce } from 'lodash';
 
 const networkOptions = TESTNET_TOKEN_MANAGER.map((chain) => ({
   value: chain.tokenManager,
@@ -354,14 +354,29 @@ function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken, updat
   </Card>
 }
 
+function useDebouncedValue(value, delay) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = debounce(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    handler();
+
+    return () => {
+      handler.cancel();
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
 
 export default function Home() {
-  const [updater, setUpdater] = useState(0);
   const [loading, setLoading] = useState(false);
   const [tokenPairs, setTokenPairs] = useState([]);
   const [filter, setFilter] = useState('');
   const [filter2, setFilter2] = useState('');
-  const [filter3, setFilter3] = useState('');
   const [currentPairs, setCurrentPairs] = useState([]);
   const [chains, setChains] = useState([]);
   const [showAddToken, setShowAddToken] = useState(false);
@@ -373,7 +388,9 @@ export default function Home() {
   const [tokenUpdater, setTokenUpdater] = useState(0);
   const [connected, setConnected] = useState(false);
   const [address, setAddress] = useState('');
-  
+
+  const debouncedFilter = useDebouncedValue(filter, 300);
+  const debouncedFilter2 = useDebouncedValue(filter2, 300);
 
   useEffect(() => {
     const func = async () => {
@@ -415,7 +432,7 @@ export default function Home() {
 
     func();
     
-  }, [updater]);
+  }, []);
 
   const [tokens, setTokens] = useState({});
 
@@ -554,14 +571,14 @@ export default function Home() {
               </TableHead>
               <TableBody>
                 {tokenPairs.filter(v=>Number(v.id) < 10000).filter(v=>{ 
-                  return v.ancestorSymbol.toLowerCase().includes(filter.toLowerCase()) || 
-                    v.id.toLowerCase().includes(filter.toLowerCase()) ||
-                    v.ancestorChainID.toLowerCase().includes(filter.toLowerCase()) ||
-                    v.fromChainID.toLowerCase().includes(filter.toLowerCase()) ||
-                    v.toChainID.toLowerCase().includes(filter.toLowerCase()) ||
-                    chains.find(m=>Number(m.chainID) === Number(v.fromChainID))?.chainType?.toLowerCase().includes(filter.toLowerCase()) ||
-                    chains.find(m=>Number(m.chainID) === Number(v.toChainID))?.chainType?.toLowerCase().includes(filter.toLowerCase()) ||
-                    chains.find(m=>Number(m.chainID) === Number(v.ancestorChainID))?.chainType?.toLowerCase().includes(filter.toLowerCase())
+                  return v.ancestorSymbol.toLowerCase().includes(debouncedFilter.toLowerCase()) || 
+                    v.id.toLowerCase().includes(debouncedFilter.toLowerCase()) ||
+                    v.ancestorChainID.toLowerCase().includes(debouncedFilter.toLowerCase()) ||
+                    v.fromChainID.toLowerCase().includes(debouncedFilter.toLowerCase()) ||
+                    v.toChainID.toLowerCase().includes(debouncedFilter.toLowerCase()) ||
+                    chains.find(m=>Number(m.chainID) === Number(v.fromChainID))?.chainType?.toLowerCase().includes(debouncedFilter.toLowerCase()) ||
+                    chains.find(m=>Number(m.chainID) === Number(v.toChainID))?.chainType?.toLowerCase().includes(debouncedFilter.toLowerCase()) ||
+                    chains.find(m=>Number(m.chainID) === Number(v.ancestorChainID))?.chainType?.toLowerCase().includes(debouncedFilter.toLowerCase())
                 }).map((row, index) => (
                   <TableRow key={row.id} sx={{ 
                     '&:nth-of-type(odd)': { backgroundColor: '#bae4e2' },
@@ -617,7 +634,7 @@ export default function Home() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {Object.keys(tokens).filter(v=>v.toLowerCase().includes(filter2.toLowerCase())).map((row, index) => (
+                    {Object.keys(tokens).filter(v=>v.toLowerCase().includes(debouncedFilter2.toLowerCase())).map((row, index) => (
                       <TableRow key={row} sx={{ 
                         '&:nth-of-type(odd)': { backgroundColor: '#bae4e2' },
                         '&:nth-of-type(even)': { backgroundColor: '#fcfcfc' }
