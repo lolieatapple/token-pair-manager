@@ -659,7 +659,6 @@ export default function Mainnet() {
               let newPair = [(Number(latestTokenPairId) + currentPairs.length +1).toString(), ['0', '0', '0', '0', '0'], '0', '0', '0', '0'];
               setCurrentPairs([...currentPairs, newPair]);
             }}>+ Add TokenPair</Button>
-            <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined'>→ Move to Mainnet</Button>
             <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined' onClick={()=>{
               // download currentPairs JSON from browser to local file system
               const element = document.createElement("a");
