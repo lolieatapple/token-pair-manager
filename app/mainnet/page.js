@@ -8,13 +8,13 @@ import { useDrag } from "react-dnd";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDrop } from "react-dnd";
-import { TESTNET_TOKEN_MANAGER } from '../config';
+import { MAINNET_TOKEN_MANAGER } from '../config';
 import styles from '../page.module.css'
 import { ethers } from 'ethers';
 import { TOKEN_MANAGER_ABIS } from '../abi';
 
 
-const networkOptions = TESTNET_TOKEN_MANAGER.map((chain) => ({
+const networkOptions = MAINNET_TOKEN_MANAGER.map((chain) => ({
   value: chain.tokenManager,
   label: chain.chainName,
 }));
@@ -372,6 +372,15 @@ export default function Mainnet() {
   const [tokenUpdater, setTokenUpdater] = useState(0);
   const [connected, setConnected] = useState(false);
   const [address, setAddress] = useState('');
+  
+
+  useEffect(()=>{
+    // load currentPairs from window object
+    if (window.currentPairs) {
+      setCurrentPairs(window.currentPairs);
+      window.currentPairs = undefined;
+    }
+  }, []);
   
 
   useEffect(() => {

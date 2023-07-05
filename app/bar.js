@@ -1,9 +1,12 @@
 'use client';
 import { Button, Stack, Box } from '@mui/material';
+import { usePathname } from 'next/navigation';
+
 
 export default function Bar() {
-  const isTestnet = window.location.pathname === "/";
-  console.log('isTestnet', isTestnet);
+  const path = usePathname();
+  const isTestnet = !path.includes('mainnet');
+  console.log('isTestnet', isTestnet, path);
   return (
     <Box 
       display="flex" 

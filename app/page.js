@@ -12,6 +12,7 @@ import { TESTNET_TOKEN_MANAGER } from './config';
 import styles from './page.module.css'
 import { ethers } from 'ethers';
 import { TOKEN_MANAGER_ABIS } from './abi';
+import { useRouter } from 'next/navigation';
 
 
 const networkOptions = TESTNET_TOKEN_MANAGER.map((chain) => ({
@@ -515,7 +516,7 @@ export default function Home() {
     setCurrentPairs(prevPairs => [...prevPairs, formatPair]);
   }, [tokenPairs]);
 
-
+  const router = useRouter();
 
 
   return (
@@ -650,7 +651,13 @@ export default function Home() {
               let newPair = [(Number(latestTokenPairId) + currentPairs.length +1).toString(), ['0', '0', '0', '0', '0'], '0', '0', '0', '0'];
               setCurrentPairs([...currentPairs, newPair]);
             }}>+ Add TokenPair</Button>
-            <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined'>→ Move to Mainnet</Button>
+            <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined' onClick={()=>{
+              console.log('Move to mainnet, currentPairs', currentPairs);
+              // temp save currentPairs to window object and jump to mainnet page 
+              window.currentPairs = currentPairs.slice();
+              // jump to /mainnet page 
+              router.push('/mainnet');
+            }}>→ Move to Mainnet</Button>
             <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined' onClick={()=>{
               // download currentPairs JSON from browser to local file system
               const element = document.createElement("a");

@@ -121,3 +121,126 @@ export const TESTNET_TOKEN_MANAGER = [
   }
 ]
 
+export const MAINNET_TOKEN_MANAGER = [
+  {
+    "chainType": "ETH",
+    "chainID": "2147483708",
+    "chainName": "Ethereum",
+    "tokenManager": "0xbab93311de250b5b422c705129b3617b3cb6e9e1",
+  },
+  {
+    "chainType": "XDC",
+    "chainID": "2147484198",
+    "chainName": "XinFin.Network",
+    "tokenManager": "0xc928c8e48647c8b0ce550c2352087b1cf5c6111e",
+  },
+  {
+    "chainType": "OETH",
+    "chainID": "2147484262",
+    "chainName": "Optimism",
+    "tokenManager": "0x1ed3538383bbfdb80343b18f85d6c5a5fb232fb6",
+  },
+  {
+    "chainType": "BNB",
+    "chainID": "2147484362",
+    "chainName": "BNB Chain",
+    "tokenManager": "0x39af91cba3aed00e9b356ecc3675c7ef309017dd",
+  },
+  {
+    "chainType": "ASTR",
+    "chainID": "2147484458",
+    "chainName": "Astar",
+    "tokenManager": "0xd97de67b982d79ed9f7eb2b1a13abc704b2ca082",
+  },
+  {
+    "chainType": "MATIC",
+    "chainID": "2147484614",
+    "chainName": "Polygon",
+    "tokenManager": "0xc928c8e48647c8b0ce550c2352087b1cf5c6111e",
+  },
+  {
+    "chainType": "TLOS",
+    "chainID": "2147484625",
+    "chainName": "Telos",
+    "tokenManager": "0x4a9f99ceb037e8c4fbec272d17d40282aa67d9c6",
+  },
+  {
+    "chainType": "OKT",
+    "chainID": "2147484644",
+    "chainName": "OKT Chain",
+    "tokenManager": "0xc928c8e48647c8b0ce550c2352087b1cf5c6111e",
+  },
+  {
+    "chainType": "FTM",
+    "chainID": "2147484655",
+    "chainName": "Fantom",
+    "tokenManager": "0x4133401a05917326765427e7629bba56c89f8bdc",
+  },
+  {
+    "chainType": "AVAX",
+    "chainID": "2147492648",
+    "chainName": "Avalanche C-Chain",
+    "tokenManager": "0xf06d72375d3bf5ab1a8222858e2098b16e5e8355",
+  },
+  {
+    "chainType": "WAN",
+    "chainID": "2153201998",
+    "chainName": "Wanchain",
+    "tokenManager": "0x9fdf94dff979dbecc2c1a16904bdfb41d305053a",
+  },
+  {
+    "chainType": "MOVR",
+    "chainID": "1073741825",
+    "chainName": "Moonbase Alpha",
+    "tokenManager": "0x32e1504a67826960245506706e0b129dc2a53b7f",
+  },
+  {
+    "chainType": "ARETH",
+    "chainID": "1073741826",
+    "chainName": "Arbitrum",
+    "tokenManager": "0xc928c8e48647c8b0ce550c2352087b1cf5c6111e",
+  },
+  {
+    "chainType": "CLV",
+    "chainID": "1073741829",
+    "chainName": "Clover P-Chain",
+    "tokenManager": "0xc928c8e48647c8b0ce550c2352087b1cf5c6111e",
+  },
+  {
+    "chainType": "FX",
+    "chainID": "1073741830",
+    "chainName": "f(x)Core",
+    "tokenManager": "0xc928c8e48647c8b0ce550c2352087b1cf5c6111e",
+  },
+  {
+    "chainType": "GTH",
+    "chainID": "1073741833",
+    "chainName": "Gather",
+    "tokenManager": "0x1ed3538383bbfdb80343b18f85d6c5a5fb232fb6",
+  },
+  {
+    "chainType": "METIS",
+    "chainID": "1073741834",
+    "chainName": "Metis",
+    "tokenManager": "0x1ed3538383bbfdb80343b18f85d6c5a5fb232fb6",
+  },
+  // {
+  //   "chainType": "OKB",
+  //   "chainID": "1073741835",
+  //   "chainName": "OKB Chain",
+  //   "tokenManager": "0x05211bbc9e0c1ed3be0252021cf558718ab65189",
+  // },
+  // {
+  //   "chainType": "SGB",
+  //   "chainID": "1073741836",
+  //   "chainName": "Songbird",
+  //   "tokenManager": "0x9b281146a04a67948f4601abda704016296017c5",
+  // },
+  // {
+  //   "chainType": "ZKETH",
+  //   "chainID": "1073741837",
+  //   "chainName": "zkSync Era",
+  //   "tokenManager": "0xe81a17a8C04BEb70058E04d0927010504f91f034",
+  // }
+]
+
