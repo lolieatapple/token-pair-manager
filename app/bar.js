@@ -1,7 +1,9 @@
 'use client';
-import { Button, Stack, Box } from '@mui/material'
+import { Button, Stack, Box } from '@mui/material';
 
 export default function Bar() {
+  const isTestnet = window.location.pathname === "/";
+  console.log('isTestnet', isTestnet);
   return (
     <Box 
       display="flex" 
@@ -12,8 +14,8 @@ export default function Bar() {
       }}
     >
       <Stack spacing={2} direction='row'>
-        <Button variant="outlined" href="/">Testnet</Button>
-        <Button  href="/mainnet">Mainnet</Button>
+        <Button variant={isTestnet ? "contained" : "outlined"} href="/">Testnet</Button>
+        <Button variant={isTestnet ? "outlined" : "contained"} href="/mainnet">Mainnet</Button>
       </Stack>
     </Box>
   )
