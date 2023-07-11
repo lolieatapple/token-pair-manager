@@ -230,12 +230,12 @@ export const MAINNET_TOKEN_MANAGER = [
   //   "chainName": "OKB Chain",
   //   "tokenManager": "0x05211bbc9e0c1ed3be0252021cf558718ab65189",
   // },
-  // {
-  //   "chainType": "SGB",
-  //   "chainID": "1073741836",
-  //   "chainName": "Songbird",
-  //   "tokenManager": "0x9b281146a04a67948f4601abda704016296017c5",
-  // },
+  {
+    "chainType": "SGB",
+    "chainID": "1073741836",
+    "chainName": "Songbird",
+    "tokenManager": "0x50133f6836CB91237E17177E2985cBDAD51f0cf2",
+  },
   // {
   //   "chainType": "ZKETH",
   //   "chainID": "1073741837",
