@@ -118,6 +118,12 @@ export const TESTNET_TOKEN_MANAGER = [
     "chainID": "1073741837",
     "chainName": "zkSync Era",
     "tokenManager": "0xe81a17a8C04BEb70058E04d0927010504f91f034",
+  },
+  {
+    "chainType": "ZEN",
+    "chainID": "1073741839",
+    "chainName": "Horizen EON Gobi Testnet",
+    "tokenManager": "0x0F0Bf93bf16fD28294c637D855fc73b917ef5fCc",
   }
 ]
 
