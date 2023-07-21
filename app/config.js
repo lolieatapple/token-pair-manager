@@ -247,6 +247,12 @@ export const MAINNET_TOKEN_MANAGER = [
   //   "chainID": "1073741837",
   //   "chainName": "zkSync Era",
   //   "tokenManager": "0xe81a17a8C04BEb70058E04d0927010504f91f034",
-  // }
+  // },
+  {
+    "chainType": "ZEN",
+    "chainID": "1073741839",
+    "chainName": "Horizen EON Mainnet",
+    "tokenManager": "0x8D42d317B2bd6B60183461ed41bd00F17C3f3fE8",
+  }
 ]
 
