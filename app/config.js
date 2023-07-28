@@ -124,6 +124,12 @@ export const TESTNET_TOKEN_MANAGER = [
     "chainID": "1073741839",
     "chainName": "Horizen EON Gobi Testnet",
     "tokenManager": "0x0F0Bf93bf16fD28294c637D855fc73b917ef5fCc",
+  },
+  {
+    "chainType": "VC",
+    "chainID": "1073741840",
+    "chainName": "Vinu Chain Testnet",
+    "tokenManager": "0x9c843263Bd9ae7277ab7c29c18e3F532894A0d35",
   }
 ]
 
