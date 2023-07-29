@@ -771,7 +771,7 @@ export default function Home() {
                 />
               })
             }
-            <DropZone width="100%" height="90%" placeholder="Drag and Drop Token Pair ⭐ Here to Modify" onDrop={onPairDrop} tokenPairs={tokenPairs} currentPairs={currentPairs} />
+            <DropZone width="98%" height="88%" placeholder="Drag and Drop Token Pair ⭐ Here to Modify" onDrop={onPairDrop} tokenPairs={tokenPairs} currentPairs={currentPairs} />
           </Paper>
         </Grid>
       </Grid>
