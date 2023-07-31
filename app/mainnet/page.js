@@ -764,8 +764,8 @@ export default function Mainnet() {
                 />
               })
             }
-            </div>
             <DropZone width="100%" height="90%" placeholder="Drag and Drop Token Pair ⭐ Here to Modify" onDrop={onPairDrop} tokenPairs={tokenPairs} currentPairs={currentPairs} />
+            </div>
           </Paper>
         </Grid>
       </Grid>
