@@ -29,10 +29,15 @@
   border-radius: 8px;
   padding: 20px;
   height: 385px;
-  overflow-y: scroll;
+  overflow: hidden;
 }
 
 .container {
   max-width: 1200px;
   padding: 0;
+}
+
+.scrollContent {
+  overflow-y: scroll;
+  height: 100%;
 }
