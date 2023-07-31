@@ -535,9 +535,6 @@ export default function Home() {
 
   const router = useRouter();
 
-  console.log('currentPairs', currentPairs.length);
-
-
   return (
     <Container maxWidth="lg" className={styles.container}>
       <DndProvider backend={HTML5Backend}>
