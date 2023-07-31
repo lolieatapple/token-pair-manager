@@ -704,57 +704,67 @@ export default function Mainnet() {
               setConnected(true);
             }}>{connected && address ? address.slice(0, 6) + '...' + address.slice(-4) : 'Connect Wallet'}</Button>
             </Stack>
+            <div className={styles.scrollContent}>
             {
               currentPairs.length > 0 && currentPairs.map((v, i)=>{
                 return <NewPair key={JSON.stringify(v)} pair={v} tokens={tokens} chains={chains} updatePairId={(oldId, id)=>{
-                  console.log('update', id);
-                  let _pairs = currentPairs.slice();
-                  for (let i=0; i<_pairs.length; i++) {
-                    if(Number(_pairs[i][0]) === Number(oldId)) {
-                      _pairs[i][0] = id;
-                      break;
+                  setCurrentPairs((pre)=>{
+                    console.log('update', id);
+                    let _pairs = pre.slice();
+                    for (let i=0; i<_pairs.length; i++) {
+                      if(Number(_pairs[i][0]) === Number(oldId)) {
+                        _pairs[i][0] = id;
+                        break;
+                      }
                     }
-                  }
-                  setCurrentPairs(_pairs);
+                    return _pairs;
+                  })
                 }} removeItem={(id)=>{
-                  console.log('remove', id);
-                  let _pairs = currentPairs.slice();
-                  setCurrentPairs(_pairs.filter(v=>Number(v[0]) !== Number(id)));
+                  setCurrentPairs((pre)=>{
+                    console.log('remove', id);
+                    let _pairs = pre.slice();
+                    return _pairs.filter(v=>Number(v[0]) !== Number(id));
+                  })
                 }}
                 updatePairToken={(id, type, token ) => {
-                  console.log('update', id, token, type);
-                  let _pairs = currentPairs.slice();
-                  for (let i=0; i<_pairs.length; i++) {
-                    if(Number(_pairs[i][0]) === Number(id)) {
-                      if(type === 'from') {
-                        _pairs[i][2] = token.slice()[4];
-                        _pairs[i][3] = token.slice()[0];
-                      } else if(type === 'to') {
-                        _pairs[i][4] = token[4];
-                        _pairs[i][5] = token[0];
-                      } else {
-                        _pairs[i][1] = token.slice();
+                  setCurrentPairs((pre)=>{
+                    console.log('update', id, token, type);
+                    let _pairs = pre.slice();
+                    for (let i=0; i<_pairs.length; i++) {
+                      if(Number(_pairs[i][0]) === Number(id)) {
+                        if(type === 'from') {
+                          _pairs[i][2] = token.slice()[4];
+                          _pairs[i][3] = token.slice()[0];
+                        } else if(type === 'to') {
+                          _pairs[i][4] = token[4];
+                          _pairs[i][5] = token[0];
+                        } else {
+                          _pairs[i][1] = token.slice();
+                        }
+                        break;
                       }
-                      break;
                     }
-                  }
-                  setCurrentPairs(_pairs);
+                    return _pairs;
+                  })
                 }}
                 updatePair={(id, _pair) => {
-                  console.log('update', id, _pair);
-                  let _pairs = currentPairs.slice();
-                  for (let i=0; i<_pairs.length; i++) {
-                    if(Number(_pairs[i][0]) === Number(id)) {
-                      _pairs[i] = _pair.slice();
-                      _pairs[i][0] = id;
-                      break;
+                  setCurrentPairs((pre)=>{
+                    console.log('update', id, _pair);
+                    let _pairs = pre.slice();
+                    for (let i=0; i<_pairs.length; i++) {
+                      if(Number(_pairs[i][0]) === Number(id)) {
+                        _pairs[i] = _pair.slice();
+                        _pairs[i][0] = id;
+                        break;
+                      }
                     }
-                  }
-                  setCurrentPairs(_pairs);
+                    return _pairs;
+                  });
                 }}
                 />
               })
             }
+            </div>
             <DropZone width="100%" height="90%" placeholder="Drag and Drop Token Pair ⭐ Here to Modify" onDrop={onPairDrop} tokenPairs={tokenPairs} currentPairs={currentPairs} />
           </Paper>
         </Grid>

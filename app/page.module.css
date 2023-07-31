@@ -38,6 +38,6 @@
 }
 
 .scrollContent {
-  overflow-y: scroll;
+  overflow: auto;
   height: 100%;
 }
