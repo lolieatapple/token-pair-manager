@@ -259,6 +259,12 @@ export const MAINNET_TOKEN_MANAGER = [
     "chainID": "1073741839",
     "chainName": "Horizen EON Mainnet",
     "tokenManager": "0x8D42d317B2bd6B60183461ed41bd00F17C3f3fE8",
+  },
+  {
+    "chainType": "VC",
+    "chainID": "1073741840",
+    "chainName": "Vinu Chain Mainnet",
+    "tokenManager": "0xb023f2D496A04c5Af9cd1214924B0Fb19397e3fA",
   }
 ]
 
