@@ -720,6 +720,7 @@ export default function Home() {
             }}>{connected && address ? address.slice(0, 6) + '...' + address.slice(-4) : 'Connect Wallet'}</Button>
             </Stack>
             <div className={styles.scrollContent}>
+            <DropZone width="98%" height="88%" placeholder="Drag and Drop Token Pair ⭐ Here to Modify" onDrop={onPairDrop} tokenPairs={tokenPairs} currentPairs={currentPairs} />
             {
               currentPairs.length > 0 && currentPairs.map((v, i)=>{
                 return <NewPair key={JSON.stringify(v)} pair={v} tokens={tokens} chains={chains} updatePairId={(oldId, id)=>{
@@ -778,7 +779,6 @@ export default function Home() {
                 />
               })
             }
-            <DropZone width="98%" height="88%" placeholder="Drag and Drop Token Pair ⭐ Here to Modify" onDrop={onPairDrop} tokenPairs={tokenPairs} currentPairs={currentPairs} />
             </div>
           </Paper>
         </Grid>
