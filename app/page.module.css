@@ -40,4 +40,5 @@
 .scrollContent {
   overflow: auto;
   height: 90%;
+  max-height: 1000px;
 }
