@@ -337,6 +337,15 @@ function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken, updat
                     window.alert('Please select a chain');
                     return;
                   }
+                  let accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                  console.log(accounts);
+                  // switch wallet network to network.walletChainId 
+                  const chainInfo = MAINNET_TOKEN_MANAGER.find(v=>v.chainName === network.label);
+
+                  await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: chainInfo.walletChainId }],
+                  });
                   // create sc instance and call transfer by ethers.js 
                   const sc = new ethers.Contract(network.value, TOKEN_MANAGER_ABIS, new ethers.providers.Web3Provider(window.ethereum).getSigner());
                   // call addTokenPair function 
@@ -354,7 +363,15 @@ function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken, updat
                     window.alert('Please select a chain');
                     return;
                   }
-                  
+                  let accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                  console.log(accounts);
+                  // switch wallet network to network.walletChainId 
+                  const chainInfo = TESTNET_TOKEN_MANAGER.find(v=>v.chainName === network.label);
+
+                  await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: chainInfo.walletChainId }],
+                  });
                   // create sc instance and call transfer by ethers.js 
                   const sc = new ethers.Contract(network.value, TOKEN_MANAGER_ABIS, new ethers.providers.Web3Provider(window.ethereum).getSigner());
                   // call addTokenPair function 
@@ -372,7 +389,15 @@ function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken, updat
                     window.alert('Please select a chain');
                     return;
                   }
-                 
+                  let accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                  console.log(accounts);
+                  // switch wallet network to network.walletChainId 
+                  const chainInfo = TESTNET_TOKEN_MANAGER.find(v=>v.chainName === network.label);
+
+                  await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: chainInfo.walletChainId }],
+                  });
                   // create sc instance and call transfer by ethers.js 
                   const sc = new ethers.Contract(network.value, TOKEN_MANAGER_ABIS, new ethers.providers.Web3Provider(window.ethereum).getSigner());
                   // call addTokenPair function 
