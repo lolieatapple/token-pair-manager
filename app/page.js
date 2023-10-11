@@ -662,7 +662,10 @@ export default function Home() {
                         }}>
                         <StyledTableCell style={{ minWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}><Chip size="small" label={chains.find(v=>Number(v.chainID) === Number(tokens[row].chainID))?.chainType} /></StyledTableCell>
                         <StyledTableCell component="th" scope="row" style={{ maxWidth: 120, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                          <Stack spacing={2} direction='row'><div>{tokens[row].symbol}</div><DraggableItem id={'token,' +tokens[row].address + ',' + tokens[row].name + ',' + tokens[row].symbol + ',' + tokens[row].decimals + ','+tokens[row].chainID}>⭐</DraggableItem></Stack>
+                          <Stack spacing={2} direction='row'>
+                            <DraggableItem id={'token,' +tokens[row].address + ',' + tokens[row].name + ',' + tokens[row].symbol + ',' + tokens[row].decimals + ','+tokens[row].chainID}>⭐</DraggableItem>
+                            <div>{tokens[row].symbol}</div>
+                          </Stack>
                         </StyledTableCell>
                         <StyledTableCell style={{ fontSize: '12px', maxWidth: 120, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{tokens[row].name}</StyledTableCell>
                         <StyledTableCell style={{ maxWidth: 30, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{tokens[row].decimals}</StyledTableCell>
