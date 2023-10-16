@@ -157,7 +157,7 @@ export const TESTNET_TOKEN_MANAGER = [
     "chainType": "BETH",
     "chainID": "1073741841",
     "chainName": "Base Goerli Testnet",
-    "tokenManager": "0x9c843263Bd9ae7277ab7c29c18e3F532894A0d35",
+    "tokenManager": "0xA12870cCF258917574d9B6884B7A3507Ec62bFBa",
     "walletChainId": '0x14a33',
   }
 ]
