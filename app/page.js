@@ -615,16 +615,7 @@ export default function Home() {
                   if (filters['FromAccount'] && !v.fromAccount.toLowerCase().includes(filters['FromAccount'].toLowerCase())) return false;
                   if (filters['ToAccount'] && !v.toAccount.toLowerCase().includes(filters['ToAccount'].toLowerCase())) return false;
 
-
                   return true;
-                  // return v.ancestorSymbol.toLowerCase().includes(debouncedFilter.toLowerCase()) || 
-                  //   v.id.toLowerCase().includes(debouncedFilter.toLowerCase()) ||
-                  //   v.ancestorChainID.toLowerCase().includes(debouncedFilter.toLowerCase()) ||
-                  //   v.fromChainID.toLowerCase().includes(debouncedFilter.toLowerCase()) ||
-                  //   v.toChainID.toLowerCase().includes(debouncedFilter.toLowerCase()) ||
-                  //   chains.find(m=>Number(m.chainID) === Number(v.fromChainID))?.chainType?.toLowerCase().includes(debouncedFilter.toLowerCase()) ||
-                  //   chains.find(m=>Number(m.chainID) === Number(v.toChainID))?.chainType?.toLowerCase().includes(debouncedFilter.toLowerCase()) ||
-                  //   chains.find(m=>Number(m.chainID) === Number(v.ancestorChainID))?.chainType?.toLowerCase().includes(debouncedFilter.toLowerCase())
                 }).map((row, index) => (
                   <TableRow key={row.id} sx={{ 
                     '&:nth-of-type(odd)': { backgroundColor: '#bae4e2' },
