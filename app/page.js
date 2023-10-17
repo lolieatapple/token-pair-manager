@@ -655,7 +655,7 @@ export default function Home() {
             ) : (
               <>
               <Stack spacing={1} direction='row'>
-              <TextField label="Filter" size='small' value={filter2} onChange={e => setFilter2(e.target.value)} variant="outlined" style={{ backgroundColor: 'white', marginBottom: '10px', border: 'none', borderRadius: 8 }} />
+              {/* <TextField label="Filter" size='small' value={filter2} onChange={e => setFilter2(e.target.value)} variant="outlined" style={{ backgroundColor: 'white', marginBottom: '10px', border: 'none', borderRadius: 8 }} /> */}
               <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined' onClick={()=>setShowAddToken(true)}>Add Token...</Button>
               </Stack>
               <Card style={{ borderRadius: 8, overflow: 'hidden' }}>
@@ -669,9 +669,33 @@ export default function Home() {
                       <StyledTableHeaderCell>Decimals</StyledTableHeaderCell>
                       <StyledTableHeaderCell>Address</StyledTableHeaderCell>
                     </TableRow>
+                    <TableRow>
+                      <StyledTableHeaderCell><input value={filters['Chain']} placeholder='Filter by Chain' onChange={e=>setFilters(pre=>({...pre, ['Chain']: e.target.value}))} /></StyledTableHeaderCell>
+                      <StyledTableHeaderCell><input value={filters['Symbol']} placeholder='Filter by Symbol' onChange={e=>setFilters(pre=>({...pre, ['Symbol']: e.target.value}))} /></StyledTableHeaderCell>
+                      <StyledTableHeaderCell><input value={filters['Name']} placeholder='Filter by Name' onChange={e=>setFilters(pre=>({...pre, ['Name']: e.target.value}))} /></StyledTableHeaderCell>
+                      <StyledTableHeaderCell><input value={filters['Decimals']} placeholder='Filter by Decimals' onChange={e=>setFilters(pre=>({...pre, ['Decimals']: e.target.value}))} /></StyledTableHeaderCell>
+                      <StyledTableHeaderCell><input value={filters['Address']} placeholder='Filter by Address' onChange={e=>setFilters(pre=>({...pre, ['Address']: e.target.value}))} /></StyledTableHeaderCell>
+                    </TableRow>
                   </TableHead>
                   <TableBody>
-                    {Object.keys(tokens).filter(v=>v.toLowerCase().includes(debouncedFilter2.toLowerCase())).map((row, index) => (
+                    {Object.keys(tokens).filter(v=>{
+                      if (tokens[v]) {
+                        let chain = chains.find(m=>tokens[v] && Number(m.chainID) === Number(tokens[v].chainID))?.chainType;
+                        if (!chain) {
+                          console.log('chain', chain, chains, tokens[v].chainID);
+                        }
+
+                        if (filters['Chain'] && chain && !chain.toLowerCase().includes(filters['Chain'].toLowerCase())) return false;
+                        if (filters['Symbol'] && !tokens[v].symbol.toLowerCase().includes(filters['Symbol'].toLowerCase())) return false;
+                        if (filters['Name'] && !tokens[v].name.toLowerCase().includes(filters['Name'].toLowerCase())) return false;
+                        if (filters['Decimals'] && !tokens[v].decimals.toLowerCase().includes(filters['Decimals'].toLowerCase())) return false;
+                        if (filters['Address'] && !tokens[v].address.toLowerCase().includes(filters['Address'].toLowerCase())) return false;
+                      } else {
+                        console.log('token not found', v, tokens);
+                      }
+
+                      return true;
+                    }).map((row, index) => (
                       <TableRow key={row} sx={{ 
                         '&:nth-of-type(odd)': { backgroundColor: '#bae4e2' },
                         '&:nth-of-type(even)': { backgroundColor: '#fcfcfc' }
