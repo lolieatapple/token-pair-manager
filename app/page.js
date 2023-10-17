@@ -557,6 +557,8 @@ export default function Home() {
 
   const router = useRouter();
 
+  const [filters, setFilters] = useState({});
+
   return (
     <Container maxWidth="lg" className={styles.container}>
       <DndProvider backend={HTML5Backend}>
@@ -573,7 +575,7 @@ export default function Home() {
         </Box>
         ) : (
           <>
-          <TextField label="Filter" value={filter} onChange={e => setFilter(e.target.value)} size="small" variant="outlined" style={{ backgroundColor: 'white', marginBottom: '10px', border: 'none', borderRadius: 8 }} />
+          {/* <TextField label="Filter" value={filter} onChange={e => setFilter(e.target.value)} size="small" variant="outlined" style={{ backgroundColor: 'white', marginBottom: '10px', border: 'none', borderRadius: 8 }} /> */}
           <Card style={{ borderRadius: 8, overflow: 'hidden' }}>
           <TableContainer style={{ maxHeight: 300, overflow: 'auto' }}>
             <Table stickyHeader>
@@ -589,17 +591,40 @@ export default function Home() {
                   <StyledTableHeaderCell>FromAccount</StyledTableHeaderCell>
                   <StyledTableHeaderCell>ToAccount</StyledTableHeaderCell>
                 </TableRow>
+                <TableRow>
+                  <StyledTableHeaderCell><input value={filters['TokenPairID']} placeholder='Filter by TokenPairID' onChange={e=>setFilters(pre=>({...pre, ['TokenPairID']: e.target.value}))} /></StyledTableHeaderCell>
+                  <StyledTableHeaderCell><input value={filters['AncestorSymbol']} placeholder='Filter by AncestorSymbol' onChange={e=>setFilters(pre=>({...pre, ['AncestorSymbol']: e.target.value}))} /></StyledTableHeaderCell>
+                  <StyledTableHeaderCell><input value={filters['AncestorDecimals']} placeholder='Filter by AncestorDecimals' onChange={e=>setFilters(pre=>({...pre, ['AncestorDecimals']: e.target.value}))} /></StyledTableHeaderCell>
+                  <StyledTableHeaderCell><input value={filters['AncestorChainID']} placeholder='Filter by AncestorChainID' onChange={e=>setFilters(pre=>({...pre, ['AncestorChainID']: e.target.value}))} /></StyledTableHeaderCell>
+                  <StyledTableHeaderCell><input value={filters['FromChainID']} placeholder='Filter by FromChainID' onChange={e=>setFilters(pre=>({...pre, ['FromChainID']: e.target.value}))} /></StyledTableHeaderCell>
+                  <StyledTableHeaderCell><input value={filters['ToChainID']} placeholder='Filter by ToChainID' onChange={e=>setFilters(pre=>({...pre, ['ToChainID']: e.target.value}))} /></StyledTableHeaderCell>
+                  <StyledTableHeaderCell><input value={filters['AncestorAccount']} placeholder='Filter by AncestorAccount' onChange={e=>setFilters(pre=>({...pre, ['AncestorAccount']: e.target.value}))} /></StyledTableHeaderCell>
+                  <StyledTableHeaderCell><input value={filters['FromAccount']} placeholder='Filter by FromAccount' onChange={e=>setFilters(pre=>({...pre, ['FromAccount']: e.target.value}))} /></StyledTableHeaderCell>
+                  <StyledTableHeaderCell><input value={filters['ToAccount']} placeholder='Filter by ToAccount' onChange={e=>setFilters(pre=>({...pre, ['ToAccount']: e.target.value}))} /></StyledTableHeaderCell>
+                </TableRow>
               </TableHead>
               <TableBody>
                 {tokenPairs.filter(v=>Number(v.id) < 10000).filter(v=>{ 
-                  return v.ancestorSymbol.toLowerCase().includes(debouncedFilter.toLowerCase()) || 
-                    v.id.toLowerCase().includes(debouncedFilter.toLowerCase()) ||
-                    v.ancestorChainID.toLowerCase().includes(debouncedFilter.toLowerCase()) ||
-                    v.fromChainID.toLowerCase().includes(debouncedFilter.toLowerCase()) ||
-                    v.toChainID.toLowerCase().includes(debouncedFilter.toLowerCase()) ||
-                    chains.find(m=>Number(m.chainID) === Number(v.fromChainID))?.chainType?.toLowerCase().includes(debouncedFilter.toLowerCase()) ||
-                    chains.find(m=>Number(m.chainID) === Number(v.toChainID))?.chainType?.toLowerCase().includes(debouncedFilter.toLowerCase()) ||
-                    chains.find(m=>Number(m.chainID) === Number(v.ancestorChainID))?.chainType?.toLowerCase().includes(debouncedFilter.toLowerCase())
+                  if (filters['TokenPairID'] && !v.id.toLowerCase().includes(filters['TokenPairID'].toLowerCase())) return false;
+                  if (filters['AncestorSymbol'] && !v.ancestorSymbol.toLowerCase().includes(filters['AncestorSymbol'].toLowerCase())) return false;
+                  if (filters['AncestorDecimals'] && !v.ancestorDecimals.toLowerCase().includes(filters['AncestorDecimals'].toLowerCase())) return false;
+                  if (filters['AncestorChainID'] && !v.ancestorChainID.toLowerCase().includes(filters['AncestorChainID'].toLowerCase())) return false;
+                  if (filters['FromChainID'] && !v.fromChainID.toLowerCase().includes(filters['FromChainID'].toLowerCase())) return false;
+                  if (filters['ToChainID'] && !v.toChainID.toLowerCase().includes(filters['ToChainID'].toLowerCase())) return false;
+                  if (filters['AncestorAccount'] && !v.ancestorAccount.toLowerCase().includes(filters['AncestorAccount'].toLowerCase())) return false;
+                  if (filters['FromAccount'] && !v.fromAccount.toLowerCase().includes(filters['FromAccount'].toLowerCase())) return false;
+                  if (filters['ToAccount'] && !v.toAccount.toLowerCase().includes(filters['ToAccount'].toLowerCase())) return false;
+
+
+                  return true;
+                  // return v.ancestorSymbol.toLowerCase().includes(debouncedFilter.toLowerCase()) || 
+                  //   v.id.toLowerCase().includes(debouncedFilter.toLowerCase()) ||
+                  //   v.ancestorChainID.toLowerCase().includes(debouncedFilter.toLowerCase()) ||
+                  //   v.fromChainID.toLowerCase().includes(debouncedFilter.toLowerCase()) ||
+                  //   v.toChainID.toLowerCase().includes(debouncedFilter.toLowerCase()) ||
+                  //   chains.find(m=>Number(m.chainID) === Number(v.fromChainID))?.chainType?.toLowerCase().includes(debouncedFilter.toLowerCase()) ||
+                  //   chains.find(m=>Number(m.chainID) === Number(v.toChainID))?.chainType?.toLowerCase().includes(debouncedFilter.toLowerCase()) ||
+                  //   chains.find(m=>Number(m.chainID) === Number(v.ancestorChainID))?.chainType?.toLowerCase().includes(debouncedFilter.toLowerCase())
                 }).map((row, index) => (
                   <TableRow key={row.id} sx={{ 
                     '&:nth-of-type(odd)': { backgroundColor: '#bae4e2' },
