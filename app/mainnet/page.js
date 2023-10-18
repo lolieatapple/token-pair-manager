@@ -271,7 +271,7 @@ function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken, updat
                 try {
                   console.log('pair', pair);
                   // create sc instance and call transfer by ethers.js 
-                  const sc = new ethers.Contract(network.value, TOKEN_MANAGER_ABIS);
+                  const sc = new ethers.Contract('0x0000000000000000000000000000000000000000', TOKEN_MANAGER_ABIS);
                   // call addTokenPair function 
                   let tx = await sc.populateTransaction.addTokenPair(...pair);
                   console.log(id, 'tx', tx);
@@ -288,7 +288,7 @@ function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken, updat
                   console.log('pair', pair);
                   
                   // create sc instance and call transfer by ethers.js 
-                  const sc = new ethers.Contract(network.value, TOKEN_MANAGER_ABIS);
+                  const sc = new ethers.Contract('0x0000000000000000000000000000000000000000', TOKEN_MANAGER_ABIS);
                   // call addTokenPair function 
                   const tx = await sc.populateTransaction.updateTokenPair(...pair);
                   console.log(id, 'tx', tx);
@@ -304,7 +304,7 @@ function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken, updat
                 try {
                   console.log('pair', pair);
                   // create sc instance and call transfer by ethers.js 
-                  const sc = new ethers.Contract(network.value, TOKEN_MANAGER_ABIS);
+                  const sc = new ethers.Contract('0x0000000000000000000000000000000000000000', TOKEN_MANAGER_ABIS);
                   // call addTokenPair function 
                   const tx = await sc.populateTransaction.removeTokenPair(pair[0]);
                   console.log(id, 'tx', tx);
