@@ -154,7 +154,7 @@ export const TESTNET_TOKEN_MANAGER = [
     "walletChainId": '0xce',
   },
   {
-    "chainType": "BETH",
+    "chainType": "BASEETH",
     "chainID": "1073741841",
     "chainName": "Base Goerli Testnet",
     "tokenManager": "0xA12870cCF258917574d9B6884B7A3507Ec62bFBa",
@@ -314,6 +314,13 @@ export const MAINNET_TOKEN_MANAGER = [
     "chainName": "Vinu Chain Mainnet",
     "tokenManager": "0xb023f2D496A04c5Af9cd1214924B0Fb19397e3fA",
     "walletChainId": "0xcf",
+  },
+  {
+    "chainType": "BASEETH",
+    "chainID": "1073741841",
+    "chainName": "Base Mainnet",
+    "tokenManager": "0x09cDfc56439643d151585B77899d0dC0f982BcD2",
+    "walletChainId": '0x2105',
   }
 ]
 
