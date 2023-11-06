@@ -300,6 +300,7 @@ export const MAINNET_TOKEN_MANAGER = [
     "chainID": "1073741837",
     "chainName": "zkSync Era",
     "tokenManager": "0x6a1B7D7d4B9b9F3e9cE585db35bF68038267Aef2",
+    "walletChainId": "0x144",
   },
   {
     "chainType": "ZEN",
