@@ -295,12 +295,12 @@ export const MAINNET_TOKEN_MANAGER = [
     "tokenManager": "0x50133f6836CB91237E17177E2985cBDAD51f0cf2",
     "walletChainId": "0x13",
   },
-  // {
-  //   "chainType": "ZKETH",
-  //   "chainID": "1073741837",
-  //   "chainName": "zkSync Era",
-  //   "tokenManager": "0xe81a17a8C04BEb70058E04d0927010504f91f034",
-  // },
+  {
+    "chainType": "ZKETH",
+    "chainID": "1073741837",
+    "chainName": "zkSync Era",
+    "tokenManager": "0x6a1B7D7d4B9b9F3e9cE585db35bF68038267Aef2",
+  },
   {
     "chainType": "ZEN",
     "chainID": "1073741839",
