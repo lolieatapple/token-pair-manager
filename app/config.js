@@ -159,6 +159,13 @@ export const TESTNET_TOKEN_MANAGER = [
     "chainName": "Base Goerli Testnet",
     "tokenManager": "0xA12870cCF258917574d9B6884B7A3507Ec62bFBa",
     "walletChainId": '0x14a33',
+  },
+  {
+    "chainType": "LINEAETH",
+    "chainID": "1073741842",
+    "chainName": "Linea Testnet",
+    "tokenManager": "0xF42A1b12b51A25DD871617dE2A6821649ab3CE60",
+    "walletChainId": '0xe704',
   }
 ]
 
