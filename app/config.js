@@ -329,6 +329,13 @@ export const MAINNET_TOKEN_MANAGER = [
     "chainName": "Base Mainnet",
     "tokenManager": "0x09cDfc56439643d151585B77899d0dC0f982BcD2",
     "walletChainId": '0x2105',
+  },
+  {
+    "chainType": "LINEAETH",
+    "chainID": "1073741842",
+    "chainName": "Linea Mainnet",
+    "tokenManager": "0x97E0883493e8bB7A119A1E36E53ee9E7A2D3CA7b",
+    "walletChainId": '0xe708',
   }
 ]
 
