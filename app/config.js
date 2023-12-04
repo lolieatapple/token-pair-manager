@@ -259,7 +259,7 @@ export const MAINNET_TOKEN_MANAGER = [
     "chainID": "1073741826",
     "chainName": "Arbitrum",
     "tokenManager": "0xc928c8e48647c8b0ce550c2352087b1cf5c6111e",
-    "walletChainId": "42161",
+    "walletChainId": "0xa4b1",
   },
   {
     "chainType": "CLV",
