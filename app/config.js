@@ -166,6 +166,13 @@ export const TESTNET_TOKEN_MANAGER = [
     "chainName": "Linea Testnet",
     "tokenManager": "0xF42A1b12b51A25DD871617dE2A6821649ab3CE60",
     "walletChainId": '0xe704',
+  },
+  {
+    "chainType": "MATICETH",
+    "chainID": "1073741838",
+    "chainName": "Polygon zkEVM Testnet",
+    "tokenManager": "0x070802602955Ae2585E8c89c68b75f29a36bc4b1",
+    "walletChainId": "0x5a2",
   }
 ]
 
