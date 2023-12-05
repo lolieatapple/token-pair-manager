@@ -339,7 +339,7 @@ export const MAINNET_TOKEN_MANAGER = [
   },
   {
     "chainType": "MATICETH",
-    "chainID": "1073741843",
+    "chainID": "1073741838",
     "chainName": "Polygon zkEVM",
     "tokenManager": "0x2eA7211507851074bC640dF83058c9B3c9B5DF55",
     "walletChainId": "0x44d",
