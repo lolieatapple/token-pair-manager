@@ -265,6 +265,62 @@ function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken, updat
             </StyledTableCell>
           </TableRow>
           <TableRow>
+            <StyledTableCell style={{backgroundColor: '#b6f4cc', maxWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }} >Offline OPs</StyledTableCell>
+            <StyledTableCell >
+              <Stack spacing={1} direction='row' >
+              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }} onClick={async ()=>{
+                try {
+                  console.log('pair', pair);
+                  // create sc instance and call transfer by ethers.js 
+                  const sc = new ethers.Contract('0x0000000000000000000000000000000000000000', TOKEN_MANAGER_ABIS);
+                  // call addTokenPair function 
+                  let tx = await sc.populateTransaction.addTokenPair(...pair);
+                  console.log(id, 'tx', tx);
+                  let data = tx.data;
+                  console.log('data', data);
+                  // write to clipboard
+                  navigator.clipboard.writeText(data.toString());
+                } catch (error) {
+                  console.error(error);
+                }
+              }}>Pack Add</Button>
+              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }} onClick={async ()=>{
+                try {
+                  console.log('pair', pair);
+                  
+                  // create sc instance and call transfer by ethers.js 
+                  const sc = new ethers.Contract('0x0000000000000000000000000000000000000000', TOKEN_MANAGER_ABIS);
+                  // call addTokenPair function 
+                  const tx = await sc.populateTransaction.updateTokenPair(...pair);
+                  console.log(id, 'tx', tx);
+                  let data = tx.data;
+                  console.log('data', data);
+                  // write to clipboard
+                  navigator.clipboard.writeText(data);
+                } catch (error) {
+                  console.error(error);
+                }
+              }}>Pack Update</Button>
+              <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }} onClick={async ()=>{
+                try {
+                  console.log('pair', pair);
+                  // create sc instance and call transfer by ethers.js 
+                  const sc = new ethers.Contract('0x0000000000000000000000000000000000000000', TOKEN_MANAGER_ABIS);
+                  // call addTokenPair function 
+                  const tx = await sc.populateTransaction.removeTokenPair(pair[0]);
+                  console.log(id, 'tx', tx);
+                  let data = tx.data;
+                  console.log('data', data);
+                  // write to clipboard
+                  navigator.clipboard.writeText(data);
+                } catch (error) {
+                  console.error(error);
+                }
+              }}>Pack Remove</Button>
+              </Stack>
+            </StyledTableCell>
+          </TableRow>
+          <TableRow>
             <StyledTableCell style={{backgroundColor: '#b6f4cc', maxWidth: 60, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }} >Operations</StyledTableCell>
             <StyledTableCell >
               <Stack spacing={1} direction='row' >
