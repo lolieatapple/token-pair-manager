@@ -173,6 +173,13 @@ export const TESTNET_TOKEN_MANAGER = [
     "chainName": "Polygon zkEVM Testnet",
     "tokenManager": "0x070802602955Ae2585E8c89c68b75f29a36bc4b1",
     "walletChainId": "0x5a2",
+  },
+  {
+    "chainType": "OPBNB",
+    "chainID": "1073741845",
+    "chainName": "opBNB",
+    "tokenManager": "0x54735C4d44224E8D4dd0fd135E9AbE534F5cFC7a",
+    "walletChainId": "0x15eb",
   }
 ]
 
