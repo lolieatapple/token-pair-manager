@@ -177,9 +177,15 @@ export const TESTNET_TOKEN_MANAGER = [
   {
     "chainType": "OPBNB",
     "chainID": "1073741845",
-    "chainName": "opBNB",
+    "chainName": "opBNB Testnet",
     "tokenManager": "0x54735C4d44224E8D4dd0fd135E9AbE534F5cFC7a",
     "walletChainId": "0x15eb",
+  },{
+    "chainType": "CELO",
+    "chainID": "2147536400",
+    "chainName": "Celo Testnet",
+    "tokenManager": "0xf6e24E7191B9669dc8D52C6BE6008E783E5c01Cb",
+    "walletChainId": "0xaef3",
   }
 ]
 
