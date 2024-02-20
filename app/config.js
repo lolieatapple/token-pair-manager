@@ -122,7 +122,7 @@ export const TESTNET_TOKEN_MANAGER = [
     "chainType": "OKB",
     "chainID": "1073741835",
     "chainName": "OKB Chain",
-    "tokenManager": "0x05211bbc9e0c1ed3be0252021cf558718ab65189",
+    "tokenManager": "0x9c843263Bd9ae7277ab7c29c18e3F532894A0d35",
     "walletChainId": '0xc3',
   },
   {
