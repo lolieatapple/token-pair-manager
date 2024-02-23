@@ -363,6 +363,13 @@ export const MAINNET_TOKEN_MANAGER = [
     "chainName": "Polygon zkEVM",
     "tokenManager": "0x2eA7211507851074bC640dF83058c9B3c9B5DF55",
     "walletChainId": "0x44d",
+  },
+  {
+    "chainType": "OPBNB",
+    "chainID": "1073741845",
+    "chainName": "opBNB Mainnet",
+    "tokenManager": "0x44d9F33E880F42a1DBa296818C8b55b248B3dd47",
+    "walletChainId": "0xcc",
   }
 ]
 
