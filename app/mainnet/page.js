@@ -771,10 +771,11 @@ export default function Mainnet() {
 
         <Grid item xs={7}>
           <Paper elevation={3} className={styles.rightPart}>
-            <Stack spacing={1} direction='row'>
+            <Stack spacing={1} direction='row' className={styles.buttonPanel}>
             <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined' onClick={()=>{
               console.log('latestTokenPairId', latestTokenPairId);
-              let newPair = [(Number(latestTokenPairId) + currentPairs.length +1).toString(), ['0', '0', '0', '0', '0'], '0', '0', '0', '0'];
+              let newPairId = window.prompt('Please input the new token pair id', (Number(latestTokenPairId) + currentPairs.length +1).toString());
+              let newPair = [(newPairId).toString(), ['0', '0', '0', '0', '0'], '0', '0', '0', '0'];
               setCurrentPairs([...currentPairs, newPair]);
             }}>+ Add TokenPair</Button>
             <Button size='small' style={{marginBottom: '10px', textTransform:'none'}} variant='outlined' onClick={()=>{
@@ -827,7 +828,7 @@ export default function Mainnet() {
 
             {
               currentPairs.length > 0 && currentPairs.map((v, i)=>{
-                return <NewPair key={JSON.stringify(v)} pair={v} tokens={tokens} chains={chains} updatePairId={(oldId, id)=>{
+                return <NewPair key={i} pair={v} tokens={tokens} chains={chains} updatePairId={(oldId, id)=>{
                   setCurrentPairs((pre)=>{
                     console.log('update', id);
                     let _pairs = pre.slice();

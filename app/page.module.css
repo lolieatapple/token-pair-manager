@@ -12,6 +12,8 @@
   background-color: #90ee90!important;
   border-radius: 8px;
   padding: 20px;
+  top: 20px;
+  position: sticky;
 }
 
 .middlePart {
@@ -29,7 +31,7 @@
   border-radius: 8px;
   padding: 20px;
   min-height: 385px;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 .container {
@@ -38,7 +40,15 @@
 }
 
 .scrollContent {
-  overflow: auto;
-  height: 90%;
-  max-height: 1000px;
+  /* overflow: auto; */
+  /* height: 90%; */
+  /* max-height: 1000px; */
+}
+
+.buttonPanel {
+  top: 0px;
+  position: sticky;
+  background-color: #f0dbf7;
+  z-index: 999;
+  padding-top: 10px;
 }
