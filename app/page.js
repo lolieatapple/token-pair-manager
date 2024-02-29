@@ -845,7 +845,7 @@ export default function Home() {
             <DropZone width="98%" height="88%" placeholder="Drag and Drop Token Pair ⭐ Here to Modify" onDrop={onPairDrop} tokenPairs={tokenPairs} currentPairs={currentPairs} />
             {
               currentPairs.length > 0 && currentPairs.map((v, i)=>{
-                return <NewPair key={i} pair={v} tokens={tokens} chains={chains} updatePairId={(oldId, id)=>{
+                return <NewPair key={JSON.stringify(v)} pair={v} tokens={tokens} chains={chains} updatePairId={(oldId, id)=>{
                   setCurrentPairs((pre)=>{
                     console.log('update', id);
                     let _pairs = pre.slice();
