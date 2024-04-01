@@ -370,6 +370,13 @@ export const MAINNET_TOKEN_MANAGER = [
     "chainName": "opBNB Mainnet",
     "tokenManager": "0x44d9F33E880F42a1DBa296818C8b55b248B3dd47",
     "walletChainId": "0xcc",
+  },
+  {
+    "chainType": "BLAST",
+    "chainID": "1073741846",
+    "chainName": "Blast Mainnet",
+    "tokenManager": "0x50133f6836CB91237E17177E2985cBDAD51f0cf2",
+    "walletChainId": "0x13e31",
   }
 ]
 
