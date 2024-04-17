@@ -309,12 +309,13 @@ export const MAINNET_TOKEN_MANAGER = [
     "tokenManager": "0x1ed3538383bbfdb80343b18f85d6c5a5fb232fb6",
     "walletChainId": "0x440",
   },
-  // {
-  //   "chainType": "OKB",
-  //   "chainID": "1073741835",
-  //   "chainName": "OKB Chain",
-  //   "tokenManager": "0x05211bbc9e0c1ed3be0252021cf558718ab65189",
-  // },
+  {
+    "chainType": "OKB",
+    "chainID": "1073741835",
+    "chainName": "X Layer",
+    "tokenManager": "0x50133f6836CB91237E17177E2985cBDAD51f0cf2",
+    "walletChainId": "0xc4",
+  },
   {
     "chainType": "SGB",
     "chainID": "1073741836",
