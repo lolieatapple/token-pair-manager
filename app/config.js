@@ -38,7 +38,7 @@ export const TESTNET_TOKEN_MANAGER = [
     "chainType": "MATIC",
     "chainID": "2147484614",
     "chainName": "Polygon",
-    "tokenManager": "0xf7c0c15cfaf2f93848e39af42a43dfdccd36f705",
+    "tokenManager": "0xc12cF8cC8Eff1F39c9e60dA81d11745c25c59501",
     "walletChainId": '0x13882',
   },
   {
