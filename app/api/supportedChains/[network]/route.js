@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import iWanClient from '@wandevs/iwan-sdk';
 import { MAINNET_TOKEN_MANAGER, TESTNET_TOKEN_MANAGER } from '@/app/config';
 
+export const maxDuration = 50;
 
 async function handleRequest(request, { params }) {
   const { network } = params;
