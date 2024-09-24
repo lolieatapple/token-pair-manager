@@ -742,10 +742,10 @@ export default function Home() {
                         }
 
                         if (filters['Chain'] && chain && !chain.toLowerCase().includes(filters['Chain'].toLowerCase())) return false;
-                        if (filters['Symbol'] && !tokens[v].symbol.toLowerCase().includes(filters['Symbol'].toLowerCase())) return false;
-                        if (filters['Name'] && !tokens[v].name.toLowerCase().includes(filters['Name'].toLowerCase())) return false;
-                        if (filters['Decimals'] && !tokens[v].decimals.toLowerCase().includes(filters['Decimals'].toLowerCase())) return false;
-                        if (filters['Address'] && !tokens[v].address.toLowerCase().includes(filters['Address'].toLowerCase())) return false;
+                        if (filters['Symbol'] && !tokens[v].symbol?.toLowerCase().includes(filters['Symbol'].toLowerCase())) return false;
+                        if (filters['Name'] && !tokens[v].name?.toLowerCase().includes(filters['Name'].toLowerCase())) return false;
+                        if (filters['Decimals'] && !tokens[v].decimals?.toLowerCase().includes(filters['Decimals'].toLowerCase())) return false;
+                        if (filters['Address'] && !tokens[v].address?.toLowerCase().includes(filters['Address'].toLowerCase())) return false;
                       } else {
                         console.log('token not found', v, tokens);
                       }
