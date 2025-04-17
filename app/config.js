@@ -378,6 +378,48 @@ export const MAINNET_TOKEN_MANAGER = [
     "chainName": "Blast Mainnet",
     "tokenManager": "0x50133f6836CB91237E17177E2985cBDAD51f0cf2",
     "walletChainId": "0x13e31",
-  }
+  },
+  {
+    "chainType": "EDX",
+    "chainID": "1073741850",
+    "chainName": "edexa",
+    "tokenManager": "0x50133f6836cb91237e17177e2985cbdad51f0cf2",
+    "walletChainId": "0x1530",
+  },
+  {
+    "chainType": "5IRE",
+    "chainID": "1073741853",
+    "chainName": "5ire",
+    "tokenManager": "0x50133f6836cb91237e17177e2985cbdad51f0cf2",
+    "walletChainId": "0x3e3",
+  },
+  {
+    "chainType": "PLYR",
+    "chainID": "1073741849",
+    "chainName": "Plyr Mainnet",
+    "tokenManager": "0x50133f6836cb91237e17177e2985cbdad51f0cf2",
+    "walletChainId": "0x3f34",
+  },
+  {
+    "chainType": "DIONE",
+    "chainID": "1073741848",
+    "chainName": "dione",
+    "tokenManager": "0x50133f6836cb91237e17177e2985cbdad51f0cf2",
+    "walletChainId": "0x25641",
+  },
+  {
+    "chainType": "BROCK",
+    "chainID": "2154655314",
+    "chainName": "bitrock",
+    "tokenManager": "0x50133f6836cb91237e17177e2985cbdad51f0cf2",
+    "walletChainId": "0x1c03",
+  },
+  {
+    "chainType": "NRG",
+    "chainID": "2147493445",
+    "chainName": "energy",
+    "tokenManager": "0x1289f70b8a16797cccbfcca8a845f36324ac9f8b",
+    "walletChainId": "0x9b75",
+  },
 ]
 
