@@ -421,5 +421,12 @@ export const MAINNET_TOKEN_MANAGER = [
     "tokenManager": "0x1289f70b8a16797cccbfcca8a845f36324ac9f8b",
     "walletChainId": "0x9b75",
   },
+  {
+    "chainType": "WORLDETH",
+    "chainID": "1073741857",
+    "chainName": "WorldChain",
+    "tokenManager": "0x3e65170df6a2ed3D54EDcD42EA63E9e626664eD6",
+    "walletChainId": "0x1e0",
+  }
 ]
 
