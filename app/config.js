@@ -427,6 +427,13 @@ export const MAINNET_TOKEN_MANAGER = [
     "chainName": "WorldChain",
     "tokenManager": "0x3e65170df6a2ed3D54EDcD42EA63E9e626664eD6",
     "walletChainId": "0x1e0",
+  },
+  {
+    "chainType": "0G",
+    "chainID": "1073741859",
+    "chainName": "0G Mainnet",
+    "tokenManager": "0x77E3695C26FF538B4dB9593B20620b73D00c7059",
+    "walletChainId": "0x4115",
   }
 ]
 
