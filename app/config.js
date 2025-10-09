@@ -186,6 +186,13 @@ export const TESTNET_TOKEN_MANAGER = [
     "chainName": "Celo Testnet",
     "tokenManager": "0xf6e24E7191B9669dc8D52C6BE6008E783E5c01Cb",
     "walletChainId": "0xaef3",
+  },
+  {
+    "chainType": "VET",
+    "chainID": "2147484466",
+    "chainName": "VET Testnet",
+    "tokenManager": "0xf0b1ac208b8217261a17ec4ce68403cc9dfd6d92",
+    "walletChainId": "0x186aa",
   }
 ]
 
@@ -434,6 +441,13 @@ export const MAINNET_TOKEN_MANAGER = [
     "chainName": "0G Mainnet",
     "tokenManager": "0x77E3695C26FF538B4dB9593B20620b73D00c7059",
     "walletChainId": "0x4115",
+  },
+  {
+    "chainType": "VET",
+    "chainID": "2147484466",
+    "chainName": "VET Mainnet",
+    "tokenManager": "0x9015565dfb8604ed9843314e29749130b62fd49d",
+    "walletChainId": "0x186a9",
   }
 ]
 
