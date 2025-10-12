@@ -117,7 +117,7 @@ const DropContainer = ({ onDrop, height, width, children, type }) => {
   );
 };
 
-function NewPair({pair, tokens, updatePairId, removeItem, updatePairToken, updatePair, chains}) {
+function NewPair({ethers, pair, tokens, updatePairId, removeItem, updatePairToken, updatePair, chains}) {
   const id = pair[0];
 
   const [network, setNetwork] = useState();
@@ -451,6 +451,7 @@ function useDebouncedValue(value, delay) {
 }
 
 export default function Home() {
+  const [ethersLib, setEthersLib] = useState(null);
   const [loading, setLoading] = useState(false);
   const [tokenPairs, setTokenPairs] = useState([]);
   const [filter, setFilter] = useState('');
@@ -614,6 +615,20 @@ export default function Home() {
   const router = useRouter();
 
   const [filters, setFilters] = useState({});
+
+  useEffect(() => {
+    // 动态导入，确保只在浏览器环境运行
+    import('ethers').then((mod) => {
+      setEthersLib(mod);
+    }).catch(console.error);
+  }, []);
+  if (!ethersLib) {
+    // 初始渲染时，在这里返回，安全退出。
+    return <div>Loading Web3...</div>;
+  }
+  // 使用 ethersLib.ethers 进行操作（如果导入的是整个包）
+  // 或者直接使用 mod 中导出的内容
+  const { ethers } = ethersLib;
 
   return (
     <Container maxWidth="lg" className={styles.container}>
@@ -845,7 +860,7 @@ export default function Home() {
             <DropZone width="98%" height="88%" placeholder="Drag and Drop Token Pair ⭐ Here to Modify" onDrop={onPairDrop} tokenPairs={tokenPairs} currentPairs={currentPairs} />
             {
               currentPairs.length > 0 && currentPairs.map((v, i)=>{
-                return <NewPair key={JSON.stringify(v)} pair={v} tokens={tokens} chains={chains} updatePairId={(oldId, id)=>{
+                return <NewPair ethers={ethers} key={JSON.stringify(v)} pair={v} tokens={tokens} chains={chains} updatePairId={(oldId, id)=>{
                   setCurrentPairs((pre)=>{
                     console.log('update', id);
                     let _pairs = pre.slice();
