@@ -1,5 +1,37 @@
 /** @type {import('next').NextConfig} */
+const webpack = require('webpack');
+console.log("1111111111111111");
 const nextConfig = {
+  webpack: (config, { isServer }) => {
+    // 在服务器端渲染时不需要这个 polyfill，只在客户端（浏览器）需要
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback, // 保留现有的 fallback 配置
+        events: require.resolve('events/'), // 为 'events' 模块提供 polyfill
+        util: require.resolve('util/'),
+        crypto: require.resolve('crypto-browserify'),
+        stream: require.resolve('stream-browserify'),
+        assert: require.resolve('assert/'),
+        process: require.resolve('process/browser'),
+        buffer: require.resolve("buffer/"),
+      };
+      config.plugins.push(
+          new webpack.ProvidePlugin({
+            process: 'process/browser',
+            Buffer: ['buffer', 'Buffer'],
+          })
+      );
+      config.resolve.alias = {
+        events: require.resolve('events/'),
+        crypto: require.resolve('crypto-browserify'),
+      };
+    }
+    console.log("333333333333333333333 config",config);
+    return config;
+  },
+  experimental: {
+    //esmExternals: 'loose', // 启用对 ESM 外部模块的支持
+  },
   async headers() {
     return [
       {
