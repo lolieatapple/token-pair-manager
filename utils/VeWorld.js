@@ -1,6 +1,6 @@
 import { TOKEN_MANAGER_ABIS } from '@/app/abi';
 import { Address, Clause, ABIContract, VET, Units } from '@vechain/sdk-core';
-import { DAppKit } from '@vechain/dapp-kit';
+import { DAppKit  } from '@vechain/dapp-kit';
 const DefaultProvider = {
     mainnet: "https://mainnet.vechain.org",
     testnet: "https://testnet.vechain.org"
@@ -9,13 +9,15 @@ const DefaultProvider = {
 export class VeWorld {
     constructor(network, rpc) {
         this.name = "VeWorld";
-        this.network = network;
         console.log("DAppKit = ",DAppKit);
-        this.kit = new DAppKit({ // { thor, vendor, wallet }
-            nodeUrl: rpc || DefaultProvider[network] || "",
-            genesis: (network === "mainnet")? 'main' : 'test'
+        const dapp = new DAppKit({
+            node: rpc || DefaultProvider[network] || "",
         });
-        this.kit.wallet.setSource('veworld');
+        console.log("dapp = ",dapp);
+        this.wallet = dapp.wallet;
+        this.signer = dapp.signer;
+        this.thor = dapp.thor;
+        this.wallet.setSource('veworld');
     }
 
     // standard function
@@ -25,23 +27,37 @@ export class VeWorld {
     }
 
     async getAccounts() {
-        let {account} = await this.kit.wallet.connect();
-        this.account = account;
-        return [account];
+        try{
+            const { account, verified } = await this.wallet.connect();
+            console.log("🔗 已连接:", account);
+
+            if (!verified) {
+                await this.vendor.sign("cert", {
+                    purpose: "identification",
+                    payload: {
+                        type: "text",
+                        content: "Authorize this dApp to interact with VeChain",
+                    },
+                }).request();
+            }
+            this.account = account;
+            return [account];
+        }catch(e){
+            console.error("err in getAccounts", e);
+        }
     }
 
     async disconnect(){
         this.account = null;
-        await this.kit.wallet.disconnect();
+        this.wallet.disconnect();
     }
 
-    async sendTransaction(clauses, sender) {
-        let tx = this.kit.vendor.sign('tx', clauses).signer(sender);
-        let { txid } = await tx.request();
-        return txid;
+    async sendTransaction(clause,sender) {
+        console.log("sender of sendTransaction", sender);
+        let ret = await this.signer.sendTransaction({from:sender,clauses:clause});
+        console.log("result of sendTransaction",ret);
+        return ret;
     }
-
-    // customized function
 
     // 生成 addTokenPair clause
     async generateAddTokenPair(scAddr, pair) {
@@ -80,25 +96,25 @@ export class VeWorld {
         ];
     }
 
+
     // 调用合约方法：添加
     async addTokenPair(scAddr, pair) {
         console.log("添加 token pair...");
-        console.log("this.kit)",this.kit);
-        const clauses = await this.generateAddTokenPair(scAddr, pair);
-        return await this.sendTransaction(clauses, this.account);
+        let clause = await this.generateAddTokenPair(scAddr,pair);
+        return await this.sendTransaction(clause,this.account);
     }
 
     // 调用合约方法：更新
     async updateTokenPair(scAddr, pair) {
         console.log("更新 token pair...");
-        const clauses = await this.generateUpdateTokenPair(scAddr, pair);
-        return await this.sendTransaction(clauses, this.account);
+        let clause = await this.generateUpdateTokenPair(scAddr,pair);
+        return await this.sendTransaction(clause,this.account);
     }
 
     // 调用合约方法：移除
     async removeTokenPair(scAddr, pair) {
         console.log("移除 token pair...");
-        const clauses = await this.generateRemoveTokenPair(scAddr, pair);
-        return await this.sendTransaction(clauses, this.account);
+        let clause = await this.generateRemoveTokenPair(scAddr,pair);
+        return await this.sendTransaction(clause,this.account);
     }
 }
