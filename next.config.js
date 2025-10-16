@@ -1,6 +1,5 @@
 /** @type {import('next').NextConfig} */
 const webpack = require('webpack');
-console.log("1111111111111111");
 const nextConfig = {
   webpack: (config, { isServer }) => {
     // 在服务器端渲染时不需要这个 polyfill，只在客户端（浏览器）需要
@@ -26,7 +25,6 @@ const nextConfig = {
         crypto: require.resolve('crypto-browserify'),
       };
     }
-    console.log("333333333333333333333 config",config);
     return config;
   },
   experimental: {

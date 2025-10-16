@@ -14,7 +14,14 @@ import { ethers } from 'ethers';
 import { TOKEN_MANAGER_ABIS } from './abi';
 import { useRouter } from 'next/navigation';
 import { debounce } from 'lodash';
-import { VeWorld } from "@/utils/VeWorld";
+
+import {BuildTPData } from "@/utils/BuildTPData";
+
+import {
+  useWallet,
+  useWalletModal
+} from '@vechain/dapp-kit-react';
+
 
 const networkOptions = TESTNET_TOKEN_MANAGER.map((chain) => ({
   value: chain.tokenManager,
@@ -122,7 +129,33 @@ function NewPair({ethers, pair, tokens, updatePairId, removeItem, updatePairToke
   const id = pair[0];
 
   const [network, setNetwork] = useState();
-  const [veWallet,setVeWallet] = useState(null);
+  const [veAddress,setVeAddress] = useState('');
+
+  const { account, signer } = useWallet();
+  const { open, onConnectionStatusChange } = useWalletModal();
+
+  const sendTx = (clauses) =>
+      signer?.sendTransaction({
+        clauses,
+      });
+
+  useEffect(() => {
+    const handleConnected = (address) => {
+      if (address) {
+        const formattedAddress = `${address.slice(
+            0,
+            6,
+        )}...${address.slice(-4)}`;
+        setVeAddress(formattedAddress);
+      } else {
+        setVeAddress('');
+      }
+    };
+
+    handleConnected(account);
+
+    onConnectionStatusChange(handleConnected);
+  }, [account, onConnectionStatusChange]);
 
   const ancestor = useMemo(() => {
     return Object.values(tokens).find((token) => token.address.toLowerCase() === pair[1][0].toLowerCase() && token.chainID === pair[1][4]);
@@ -331,25 +364,8 @@ function NewPair({ethers, pair, tokens, updatePairId, removeItem, updatePairToke
                 onChange={async (e)=>{
                   console.log(e);
                   setNetwork(e);
-                  if(e.label.toString().toLowerCase().includes('vet') && veWallet == null){
-                      console.log("user select vechain testnet");
-                      try{
-
-                        let wallet = new VeWorld('testnet');
-                        console.log("wallet..",wallet);
-                        let account = await wallet.getAccounts();
-                        console.log("vechain account",account[0]);
-                        console.log("wallet...",wallet);
-                        setVeWallet(wallet);
-                      }catch(err){
-                        console.log(err);
-                      }
-                  }else{
-                      console.log("veWallet",veWallet);
-                      if(veWallet){
-                        await veWallet.disconnect();
-                        setVeWallet(null);
-                      }
+                  if(e.label.toString().toLowerCase().includes('vet')){
+                    open();
                   }
                 }} />
               <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }} onClick={async ()=>{
@@ -363,9 +379,9 @@ function NewPair({ethers, pair, tokens, updatePairId, removeItem, updatePairToke
 
                   if(network.label.toString().toLowerCase().includes('vet')){
                     console.log("entering vechain addTokenPair");
-                    console.log("veWallet",veWallet);
-                    let tx = await veWallet.addTokenPair(network.value,pair);
-                    console.log(id, 'tx', tx);
+                    const builder = await new BuildTPData();
+                    const clause = await builder.generateAddTokenPair(network.value,pair);
+                    await sendTx(clause);
                   }else{
                     let accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                     console.log(accounts);
@@ -398,8 +414,9 @@ function NewPair({ethers, pair, tokens, updatePairId, removeItem, updatePairToke
 
                   if(network.label.toString().toLowerCase().includes('vet')){
                     console.log("entering vechain updateTokenPair");
-                    const tx = await veWallet.updateTokenPair(network.value,pair);
-                    console.log(id, 'tx', tx);
+                    const builder = await new BuildTPData();
+                    const clause = await builder.generateUpdateTokenPair(network.value,pair);
+                    await sendTx(clause);
                   }else{
                     let accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                     console.log(accounts);
@@ -432,8 +449,10 @@ function NewPair({ethers, pair, tokens, updatePairId, removeItem, updatePairToke
 
                   if(network.label.toString().toLowerCase().includes('vet')){
                     console.log("entering vechain removeTokenPair");
-                    await veWallet.removeTokenPair(network.value,pair);
-                    console.log(id, 'tx', tx);
+
+                    const builder = await new BuildTPData();
+                    const clause = await builder.generateRemoveTokenPair(network.value,pair);
+                    await sendTx(clause);
                   }else{
                     let accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                     console.log(accounts);
