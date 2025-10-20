@@ -369,17 +369,13 @@ function NewPair({ethers, pair, tokens, updatePairId, removeItem, updatePairToke
                   }
                 }} />
               <Button size='small' variant='outlined' color='secondary' style={{ textTransform: 'none' }} onClick={async ()=>{
-                console.log("veWallet addTokenPair 1",veWallet);
                 try {
                   console.log('pair', pair);
                   console.log('network', network);
-                  console.log("veWallet addTokenPair 2",veWallet);
                   if (!network) {
                     window.alert('Please select a chain');
                     return;
                   }
-
-                  console.log("veWallet addTokenPair 3",veWallet);
 
                   if(network.label.toString().toLowerCase().includes('vet')){
                     console.log("entering vechain addTokenPair");
