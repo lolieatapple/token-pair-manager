@@ -21,6 +21,7 @@ const nextConfig = {
           })
       );
       config.resolve.alias = {
+        ...config.resolve.alias,
         events: require.resolve('events/'),
         crypto: require.resolve('crypto-browserify'),
       };
