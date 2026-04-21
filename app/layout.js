@@ -49,6 +49,7 @@ export default function RootLayout({ children }) {
             node="https://testnet.vechain.org/"
             usePersistence
             walletConnectOptions={walletConnectOptions}
+            v2Api={{ enabled: false }}
         >
         {children}
         </DAppKitProvider>
